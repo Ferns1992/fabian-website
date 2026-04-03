@@ -299,13 +299,9 @@ export default function App() {
               {/* Main Image Container - Glassmorphism Frame */}
               <div className="absolute inset-0 rounded-[40px] md:rounded-[80px] overflow-hidden border border-white/10 bg-zinc-900/50 backdrop-blur-3xl shadow-2xl transform transition-transform duration-700 group-hover:scale-[1.02] group-hover:-rotate-1">
                 <img 
-                  src="https://drive.google.com/uc?export=view&id=1qa0EH0UTlqrmCwuKgIQR6CrSZxlQlFSo" 
+                  src="/profile.png"
                   alt={PERSONAL_INFO.name}
                   className="w-full h-full object-cover object-top transition-all duration-1000 group-hover:scale-110"
-                  referrerPolicy="no-referrer"
-                  onError={(e) => {
-                    e.currentTarget.src = "https://picsum.photos/seed/fabian-premium/1000/1000";
-                  }}
                 />
                 {/* Subtle Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-60" />
@@ -356,13 +352,9 @@ export default function App() {
               <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-3xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
               <div className="relative aspect-square rounded-3xl overflow-hidden bg-zinc-900 border border-white/10 shadow-2xl">
                 <img 
-                  src="https://drive.google.com/uc?export=view&id=1qa0EH0UTlqrmCwuKgIQR6CrSZxlQlFSo" 
+                  src="/profile.png"
                   alt="Fabian Milton Fernandes" 
                   className="w-full h-full object-cover transition-all duration-700 hover:scale-105"
-                  referrerPolicy="no-referrer"
-                  onError={(e) => {
-                    e.currentTarget.src = "https://picsum.photos/seed/fabian-milton/800/800";
-                  }}
                 />
               </div>
             </div>

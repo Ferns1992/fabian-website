@@ -140,6 +140,8 @@ export const STATS = [
   { label: "Clients Worldwide", value: "50+" },
   { label: "AI Solutions", value: "40+" },
 ];
+
+export const BLOG_POSTS = [
   {
     title: "The Future of Self-Hosted AI",
     date: "March 10, 2024",

@@ -64,6 +64,14 @@ export const PORTFOLIO = [
 
 export const GITHUB_REPOS = [
   {
+    name: "seismic-watch",
+    description: "Real-time underwater earthquake tracking web application with 3D globe visualization",
+    url: "https://github.com/Ferns1992/seismic-watch",
+    language: "TypeScript",
+    stars: 0,
+    forks: 0,
+  },
+  {
     name: "fabian-website",
     description: "Personal portfolio website built with React, Vite, and Tailwind CSS",
     url: "https://github.com/Ferns1992/fabian-website",

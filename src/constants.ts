@@ -166,3 +166,17 @@ export const BLOG_POSTS = [
     excerpt: "Exploring long-range communication for remote monitoring systems.",
   },
 ];
+
+// To add new videos:
+// 1. Get the video thumbnail URL (right-click video on Facebook > Copy image link)
+// 2. Get the video URL (right-click video > Copy link)
+// 3. Add a new entry below
+
+export const VIDEOS = [
+  {
+    title: "SysIT Admin Introduction",
+    thumbnail: "https://picsum.photos/seed/vid1/600/400", // Replace with actual thumbnail URL
+    url: "https://www.facebook.com/watch/?v=123456789",    // Replace with actual video URL
+    platform: "facebook",
+  },
+];

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Github, 
-  Linkedin, 
   Mail, 
   ExternalLink, 
   ChevronRight, 
@@ -195,18 +194,6 @@ export default function App() {
                   </div>
                   <ArrowRight className="w-4 h-4 text-zinc-700 group-hover:translate-x-0.5 transition-transform" />
                 </a>
-                <a 
-                  href={PERSONAL_INFO.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/[0.06] rounded-xl hover:bg-white/[0.04] hover:border-white/[0.1] transition-all group"
-                >
-                  <div className="flex items-center gap-3">
-                    <Linkedin className="w-4 h-4 text-zinc-600" />
-                    <span className="text-sm font-medium text-zinc-400">LinkedIn Profile</span>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-zinc-700 group-hover:translate-x-0.5 transition-transform" />
-                </a>
               </div>
 
               <div className="mt-8 pt-6 border-t border-white/[0.06] text-center">
@@ -288,13 +275,10 @@ export default function App() {
                 <span>Let's Talk</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </motion.button>
-              
+               
               <div className="flex items-center gap-1.5">
                 <a href={PERSONAL_INFO.github} target="_blank" rel="noopener noreferrer" className="p-3.5 text-zinc-600 hover:text-zinc-300 hover:bg-white/[0.03] rounded-xl transition-all">
                   <Github className="w-5 h-5" />
-                </a>
-                <a href={PERSONAL_INFO.linkedin} target="_blank" rel="noopener noreferrer" className="p-3.5 text-zinc-600 hover:text-zinc-300 hover:bg-white/[0.03] rounded-xl transition-all">
-                  <Linkedin className="w-5 h-5" />
                 </a>
               </div>
             </motion.div>
@@ -635,15 +619,6 @@ export default function App() {
                 <Mail className="w-4 h-4" />
                 Get in Touch
               </motion.button>
-              <a 
-                href={PERSONAL_INFO.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-7 py-3.5 bg-transparent text-zinc-400 font-medium rounded-xl border border-white/[0.06] hover:bg-white/[0.03] hover:text-zinc-300 transition-all flex items-center gap-2"
-              >
-                <Linkedin className="w-4 h-4" />
-                LinkedIn
-              </a>
             </div>
           </div>
         </section>

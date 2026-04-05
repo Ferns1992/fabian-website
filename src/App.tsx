@@ -477,6 +477,45 @@ export default function App() {
             </div>
           </section>
 
+          {/* Videos Section */}
+          <section id="videos" className="mb-32 scroll-mt-32">
+            <SectionHeading icon={Play}>Latest Videos</SectionHeading>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {VIDEOS.map((video, i) => (
+                <a
+                  key={i}
+                  href={video.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ y: -5, scale: 1.01 }}
+                  className="group block bg-white/[0.02] border border-white/[0.06] rounded-2xl overflow-hidden hover:border-white/[0.1] transition-all duration-300"
+                >
+                  <div className="relative aspect-video bg-zinc-900/50 overflow-hidden">
+                    <img 
+                      src={video.thumbnail}
+                      alt={video.title}
+                      className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-14 h-14 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Play className="w-6 h-6 text-white ml-1" fill="white" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="text-base font-medium text-zinc-300 mb-2 group-hover:text-white transition-colors">
+                      {video.title}
+                    </h3>
+                    <span className="text-xs text-zinc-600 flex items-center gap-1.5 uppercase tracking-wider">
+                      {video.platform === 'facebook' && '▶ Facebook'}
+                    </span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+
         {/* GitHub Repos Section */}
         <section id="github" className="mb-32 scroll-mt-32">
           <SectionHeading icon={Github}>Open Source Projects</SectionHeading>
@@ -575,56 +614,6 @@ export default function App() {
                 </div>
               </motion.div>
             ))}
-          </div>
-        </section>
-
-        {/* Videos Section */}
-        <section id="videos" className="mb-32 scroll-mt-32">
-          <SectionHeading icon={Play}>Latest Videos</SectionHeading>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {VIDEOS.map((video, i) => (
-              <a
-                key={i}
-                href={video.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ y: -5, scale: 1.01 }}
-                className="group block bg-white/[0.02] border border-white/[0.06] rounded-2xl overflow-hidden hover:border-white/[0.1] transition-all duration-300"
-              >
-                <div className="relative aspect-video bg-zinc-900/50 overflow-hidden">
-                  <img 
-                    src={video.thumbnail}
-                    alt={video.title}
-                    className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-14 h-14 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Play className="w-6 h-6 text-white ml-1" fill="white" />
-                    </div>
-                  </div>
-                </div>
-                <div className="p-5">
-                  <h3 className="text-base font-medium text-zinc-300 mb-2 group-hover:text-white transition-colors">
-                    {video.title}
-                  </h3>
-                  <span className="text-xs text-zinc-600 flex items-center gap-1.5 uppercase tracking-wider">
-                    {video.platform === 'facebook' && '▶ Facebook'}
-                    {video.platform === 'youtube' && '▶ YouTube'}
-                  </span>
-                </div>
-              </a>
-            ))}
-          </div>
-          <div className="mt-8 text-center">
-            <a 
-              href="https://www.facebook.com/people/Sysitadmincom/61574355035109/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
-            >
-              View all videos <ExternalLink className="w-4 h-4" />
-            </a>
           </div>
         </section>
 

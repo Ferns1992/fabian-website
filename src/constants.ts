@@ -167,16 +167,29 @@ export const BLOG_POSTS = [
   },
 ];
 
-// To add new videos:
-// 1. Get the video thumbnail URL (right-click video on Facebook > Copy image link)
-// 2. Get the video URL (right-click video > Copy link)
-// 3. Add a new entry below
-
 export const VIDEOS = [
   {
-    title: "SysIT Admin Introduction",
-    thumbnail: "https://picsum.photos/seed/vid1/600/400", // Replace with actual thumbnail URL
-    url: "https://www.facebook.com/watch/?v=123456789",    // Replace with actual video URL
+    title: "Video 1",
+    thumbnail: "https://picsum.photos/seed/v1/600/400",
+    url: "https://www.facebook.com/share/v/1K2vR5pTa1/",
+    platform: "facebook",
+  },
+  {
+    title: "Video 2",
+    thumbnail: "https://picsum.photos/seed/v2/600/400",
+    url: "https://www.facebook.com/share/v/1EFRVk5cQc/",
+    platform: "facebook",
+  },
+  {
+    title: "Video 3",
+    thumbnail: "https://picsum.photos/seed/v3/600/400",
+    url: "https://www.facebook.com/share/v/1BgWUSWDTF/",
+    platform: "facebook",
+  },
+  {
+    title: "Video 4",
+    thumbnail: "https://picsum.photos/seed/v4/600/400",
+    url: "https://www.facebook.com/share/v/18QV5eCze1/",
     platform: "facebook",
   },
 ];

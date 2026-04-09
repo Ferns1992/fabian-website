@@ -317,7 +317,7 @@ export default function App() {
               {/* Main Image Container */}
               <div className="absolute inset-0 rounded-[50px] md:rounded-[70px] overflow-hidden border border-white/[0.06] bg-zinc-900/60 backdrop-blur-xl shadow-2xl transform transition-transform duration-700 group-hover:scale-[1.005]">
                 <img 
-                  src="/about.jpg"
+                  src="/profile.webp"
                   alt={PERSONAL_INFO.name}
                   className="w-full h-full object-cover object-[center_15%] transition-all duration-1000 group-hover:scale-105"
                 />
@@ -388,7 +388,7 @@ export default function App() {
               <div className="absolute -inset-0.5 bg-gradient-to-r from-white/[0.08] to-white/[0.03] rounded-3xl blur opacity-30 group-hover:opacity-50 transition duration-700"></div>
               <div className="relative aspect-square rounded-3xl overflow-hidden bg-zinc-900 border border-white/[0.06]">
                 <img 
-                  src="/about.jpg"
+                  src="/profile.webp"
                   alt="Fabian Milton Fernandes" 
                   className="w-full h-full object-cover transition-all duration-700 group-hover:scale-103"
                 />

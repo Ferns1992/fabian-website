@@ -388,7 +388,7 @@ export default function App() {
               <div className="absolute -inset-0.5 bg-gradient-to-r from-white/[0.08] to-white/[0.03] rounded-3xl blur opacity-30 group-hover:opacity-50 transition duration-700"></div>
               <div className="relative aspect-square rounded-3xl overflow-hidden bg-zinc-900 border border-white/[0.06]">
                 <img 
-                  src="/profile.webp"
+                  src="/about.jpg"
                   alt="Fabian Milton Fernandes" 
                   className="w-full h-full object-cover transition-all duration-700 group-hover:scale-103"
                 />

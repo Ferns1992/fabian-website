@@ -1,6 +1,7 @@
 import React, {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -430,12 +431,21 @@ export function CountUp({
   const { reduce } = useMotionPrefs();
   const [display, setDisplay] = useState(() => value);
 
-  const match = value.match(/^(\D*)(\d[\d,]*)(.*)$/s);
+  // Must be memoised: value.match() allocates a fresh array each render, and
+  // a changing identity here would restart the animation on every update.
+  const parsed = useMemo(() => {
+    const m = value.match(/^(\D*)(\d[\d,]*)(.*)$/s);
+    if (!m) return null;
+    return {
+      prefix: m[1],
+      target: parseInt(m[2].replace(/,/g, ''), 10),
+      suffix: m[3],
+    };
+  }, [value]);
 
   useEffect(() => {
-    if (!match) return;
-    const [, prefix, numRaw, suffix] = match;
-    const target = parseInt(numRaw.replace(/,/g, ''), 10);
+    if (!parsed) return;
+    const { prefix, target, suffix } = parsed;
 
     if (reduce) {
       setDisplay(value);
@@ -451,10 +461,11 @@ export function CountUp({
       duration,
       ease: [0.16, 1, 0.3, 1],
       onUpdate: (v) => setDisplay(`${prefix}${Math.round(v)}${suffix}`),
+      onComplete: () => setDisplay(value),
     });
 
     return () => controls.stop();
-  }, [inView, duration, reduce, value, match]);
+  }, [inView, duration, reduce, value, parsed]);
 
   return (
     <span ref={ref} className={className}>
@@ -482,7 +493,7 @@ export function ScrollProgress() {
   return (
     <motion.div
       aria-hidden="true"
-      className="fixed top-0 left-0 right-0 z-[60] h-[2px] origin-left bg-gradient-to-r from-emerald-400 via-emerald-300 to-sky-400"
+      className="fixed top-0 left-0 right-0 z-[60] h-[2px] origin-left bg-gradient-to-r from-accent via-accent to-accent-2"
       style={{ scaleX }}
     />
   );
@@ -519,7 +530,7 @@ export function CursorGlow() {
   return (
     <motion.div
       aria-hidden="true"
-      className="pointer-events-none fixed left-0 top-0 z-[5] h-80 w-80 rounded-full bg-emerald-400/[0.055] blur-3xl"
+      className="pointer-events-none fixed left-0 top-0 z-[5] h-80 w-80 rounded-full bg-pointer-glow blur-3xl"
       style={{ x: sx, y: sy, opacity: visible ? 1 : 0 }}
     />
   );
@@ -584,7 +595,7 @@ export function Preloader({ onDone }: { onDone?: () => void }) {
     <AnimatePresence>
       {active ? (
         <motion.div
-          className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#0a0a0a]"
+          className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-bg"
           initial={{ opacity: 1 }}
           exit={{ y: '-100%', transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}
         >
@@ -593,20 +604,20 @@ export function Preloader({ onDone }: { onDone?: () => void }) {
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="text-3xl md:text-5xl font-semibold tracking-tight text-white"
+              className="text-3xl md:text-5xl font-semibold tracking-tight text-fg-strong"
             >
-              FABIAN<span className="text-emerald-400">.</span>
+              FABIAN<span className="text-accent">.</span>
             </motion.p>
           </div>
 
-          <div className="mt-6 h-px w-40 overflow-hidden bg-white/10 sm:w-64">
+          <div className="mt-6 h-px w-40 overflow-hidden bg-hairline sm:w-64">
             <motion.div
-              className="h-full origin-left bg-emerald-400"
+              className="h-full origin-left bg-accent"
               style={{ scaleX: pct / 100 }}
             />
           </div>
 
-          <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.35em] text-zinc-600 tabular-nums">
+          <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.35em] text-fg-faint tabular-nums">
             {String(pct).padStart(3, '0')}
           </p>
         </motion.div>
@@ -648,8 +659,8 @@ export function Marquee({
         {children}
         {children}
       </motion.div>
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0a0a0a] to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0a0a0a] to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-bg to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-bg to-transparent" />
     </div>
   );
 }
@@ -664,12 +675,12 @@ export function DrawLine({ className }: { className?: string }) {
   const scaleY = useSpring(scrollYProgress, { stiffness: 90, damping: 24 });
   const { reduce } = useMotionPrefs();
 
-  if (reduce) return <div className={`bg-white/[0.08] ${className ?? ''}`} />;
+  if (reduce) return <div className={`bg-hairline ${className ?? ''}`} />;
 
   return (
-    <div ref={ref} className={`h-full w-px bg-white/[0.08] ${className ?? ''}`}>
+    <div ref={ref} className={`h-full w-px bg-hairline ${className ?? ''}`}>
       <motion.div
-        className="h-full w-full origin-top bg-gradient-to-b from-emerald-400/70 via-emerald-300/40 to-transparent"
+        className="h-full w-full origin-top bg-gradient-to-b from-accent/70 via-accent/40 to-transparent"
         style={{ scaleY }}
       />
     </div>
@@ -694,16 +705,16 @@ export function SectionHeading({
         <div className="flex items-center gap-3">
           {Icon ? (
             <motion.span
-              className="grid h-9 w-9 place-items-center rounded-lg bg-white/[0.03] ring-1 ring-inset ring-white/[0.06]"
+              className="grid h-9 w-9 place-items-center rounded-lg bg-elev ring-1 ring-inset ring-hairline"
               initial={reduce ? false : { rotate: -25, scale: 0.6, opacity: 0 }}
               whileInView={{ rotate: 0, scale: 1, opacity: 1 }}
               viewport={{ once: true, amount: 0.6 }}
               transition={{ type: 'spring', stiffness: 260, damping: 16 }}
             >
-              <Icon className="h-[18px] w-[18px] text-emerald-400/80" />
+              <Icon className="h-[18px] w-[18px] text-accent/80" />
             </motion.span>
           ) : null}
-          <h2 className="text-2xl font-medium tracking-tight text-zinc-100 md:text-3xl">
+          <h2 className="text-2xl font-medium tracking-tight text-fg-strong md:text-3xl">
             {children}
           </h2>
         </div>
@@ -711,14 +722,14 @@ export function SectionHeading({
 
       {!reduce ? (
         <motion.div
-          className="mt-4 h-px origin-left bg-gradient-to-r from-emerald-400/50 via-white/10 to-transparent"
+          className="mt-4 h-px origin-left bg-gradient-to-r from-accent/50 via-hairline to-transparent"
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         />
       ) : (
-        <div className="mt-4 h-px bg-white/[0.08]" />
+        <div className="mt-4 h-px bg-hairline" />
       )}
     </div>
   );

@@ -1,13 +1,22 @@
 export const PERSONAL_INFO = {
   name: "Fabian Milton Fernandes",
-  title: "IT & AI Engineer | Technical Project Manager",
+  title: "AI Engineer & IT Infrastructure Consultant",
   email: "admin@sysitadmin.com",
+  /** Secondary address shown in the contact section if the domain bounces. */
+  backupEmail: "fabianfernandes25@gmail.com",
   linkedin: "https://linkedin.com/in/fabianfernandes1992",
   github: "https://github.com/Ferns1992",
   bioSite: "https://bio.site/fabianmiltonfernandes",
-  bio: "I specialize in remote IT support, AI automation, and technical project management with over 14 years of experience. I am an expert in building self-hosted AI solutions, managing complex Proxmox VE environments, and orchestrating containerized workloads with Docker and Kubernetes. Over the past 4 years, I've 'vibe coded' and deployed over 100+ web applications using Google AI Studio and Base64 for a diverse global clientele.",
-  location: "Based in Philippines",
+  bio: "I specialize in self-hosted AI systems, IT infrastructure, and automation, with over a decade of hands-on experience. I build AI agents and retrieval systems, run Proxmox and Docker/Kubernetes clusters for production workloads, and automate operations with n8n and local LLMs. I have shipped 100+ web applications for a diverse global clientele.",
+  location: "Philippines",
 };
+
+/** Where I currently take on work. `primary` renders as the main badge. */
+export const LOCATIONS = [
+  { country: "Philippines", code: "PH", primary: true },
+  { country: "India", code: "IN", primary: false },
+  { country: "Bahrain", code: "BH", primary: false },
+];
 
 export const SKILLS = [
   { name: "Proxmox VE & Virtualization", category: "Infrastructure" },
@@ -24,22 +33,16 @@ export const SKILLS = [
 
 export const EXPERIENCE = [
   {
+    role: "Freelance AI Engineer & IT Infrastructure Consultant",
+    company: "Independent",
+    period: "2025 - Present",
+    description: "Designing and deploying self-hosted AI platforms and production infrastructure for clients across multiple countries. Building AI agents and RAG systems, running Proxmox and Docker/Kubernetes clusters for high-availability workloads, and automating operations with n8n and local LLMs. Delivered 100+ web applications end to end, from architecture through deployment.",
+  },
+  {
     role: "IT Infrastructure Manager",
     company: "JASGROUP OF COMPANIES",
-    period: "Jun 2015 - Present",
-    description: "Leading digital transformation by setting up restaurant software (ORACLE MICROS RES), supporting chain restaurants, and managing Active Directory domain services. Specialized in deploying robust infrastructure for retail and hospitality.",
-  },
-  {
-    role: "AI & DevOps Lead (Self-Initiated)",
-    company: "Personal Lab / SysITAdmin",
-    period: "2020 - Present",
-    description: "Architecting self-hosted AI platforms. Implementing Proxmox clusters to host Docker and Kubernetes environments for high-availability AI services. Automated complex workflows using n8n and local LLMs.",
-  },
-  {
-    role: "Full-Stack AI Developer (Freelance)",
-    company: "Global Clients",
-    period: "2020 - Present",
-    description: "Developed and deployed 100+ web applications using Google AI Studio and Base64 encoding. Utilized 'vibe coding' for rapid development and containerized deployment via Docker and Portainer.",
+    period: "Jun 2015 - 2025",
+    description: "Led digital transformation across restaurant and retail operations: Oracle MICROS POS deployments, Active Directory domain services, and network infrastructure supporting multi-site chains. Managed the full infrastructure lifecycle for hospitality environments.",
   },
 ];
 
@@ -139,26 +142,37 @@ export const TECH_BADGES = [
 
 export const STATS = [
   { label: "Projects Built", value: "100+" },
-  { label: "Years Experience", value: "14+" },
+  { label: "Years Experience", value: "11+" },
   { label: "Clients Worldwide", value: "50+" },
   { label: "AI Solutions", value: "40+" },
 ];
 
-export const BLOG_POSTS = [
+export type Insight = {
+  title: string;
+  excerpt: string;
+  cover: string;
+  /** Not published yet, so the card says so rather than implying it is live. */
+  status: "draft";
+};
+
+export const BLOG_POSTS: Insight[] = [
   {
     title: "The Future of Self-Hosted AI",
-    date: "March 10, 2024",
     excerpt: "Why running your own LLMs locally is becoming the standard for privacy-conscious engineers.",
+    cover: "/insights/self-hosted-ai.webp",
+    status: "draft",
   },
   {
     title: "Mastering n8n for Enterprise Automation",
-    date: "February 25, 2024",
     excerpt: "How I used n8n to streamline IT infrastructure management across multiple restaurant chains.",
+    cover: "/insights/n8n-automation.webp",
+    status: "draft",
   },
   {
     title: "IoT in the Wild: ESP32 and LoRa",
-    date: "January 15, 2024",
     excerpt: "Exploring long-range communication for remote monitoring systems.",
+    cover: "/insights/esp32-lora.webp",
+    status: "draft",
   },
 ];
 

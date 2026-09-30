@@ -12,7 +12,22 @@ import { useCoarsePointer, useMotionPrefs } from '../animations';
  * a few hundred particles is far cheaper than any WebGL setup.
  * ------------------------------------------------------------------ */
 
-const BG = '10, 10, 10'; // #0a0a0a, matches the page background
+/**
+ * Trail fade colour, read from CSS so it tracks the active theme.
+ *
+ * This must match the page background exactly: the trails are made by
+ * painting a translucent background over the last frame, so a mismatch
+ * leaves permanent dark smears in light mode. Stored as "r, g, b" so it can
+ * be dropped straight into rgba() with the per-frame alpha.
+ */
+function readCanvasBg(): string {
+  if (typeof window === 'undefined') return '10, 10, 10';
+  const raw = getComputedStyle(document.documentElement)
+    .getPropertyValue('--canvas-bg')
+    .trim();
+  return raw || '10, 10, 10';
+}
+
 const DPR_CAP = 2;
 
 const PALETTE = [
@@ -98,10 +113,17 @@ export default function FlowField({ density = 0.00009 }: { density?: number }) {
       particles = Array.from({ length: target }, () => spawn(true));
     };
 
+    // Re-read on theme change so the fade colour follows the page.
+    let bg = readCanvasBg();
+    const onThemeChange = () => {
+      bg = readCanvasBg();
+    };
+    window.addEventListener('themechange', onThemeChange);
+
     const step = () => {
       // Fade the previous frame instead of clearing: this is what makes trails.
       ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = `rgba(${BG}, 0.075)`;
+      ctx.fillStyle = `rgba(${bg}, 0.075)`;
       ctx.fillRect(0, 0, width, height);
 
       ctx.globalCompositeOperation = 'lighter';
@@ -218,6 +240,7 @@ export default function FlowField({ density = 0.00009 }: { density?: number }) {
       window.removeEventListener('resize', resize);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerleave', onLeave);
+      window.removeEventListener('themechange', onThemeChange);
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [density, reduce, coarse]);

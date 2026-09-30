@@ -10,7 +10,11 @@
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
     "deploy": "npm run build && wrangler deploy",
-    "deploy:dry": "npm run build && wrangler deploy --dry-run"
+    "deploy:dry": "npm run build && wrangler deploy --dry-run",
+    "test": "npm run build && node tests/theme.mjs",
+    "test:theme": "node tests/theme.mjs",
+    "test:countup": "esbuild tests/countup-entry.tsx --bundle --outfile=tests/.countup.bundle.js --format=iife --platform=browser --jsx=automatic && node tests/countup.mjs",
+    "gen:covers": "node scripts/gen-insight-covers.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
@@ -31,6 +35,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "autoprefixer": "^10.4.21",
+    "jsdom": "^30.1.1",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import {
   ArrowRight,
   BookOpen,
+  ArrowUpRight,
   Briefcase,
   ChevronRight,
   Cpu,
@@ -19,8 +20,19 @@ import {
   User,
   X,
   Zap,
+  Radar,
+  Boxes,
+  Rocket,
+  Fuel,
+  ScanText,
+  Calculator,
+  LayoutGrid,
+  TerminalSquare,
+  Youtube,
 } from 'lucide-react';
 import {
+  APPS,
+  APP_ICONS,
   BLOG_POSTS,
   EXPERIENCE,
   GITHUB_REPOS,
@@ -59,10 +71,26 @@ const NAV_ITEMS = [
   { id: 'about', label: 'About' },
   { id: 'projects', label: 'Projects' },
   { id: 'portfolio', label: 'Portfolio' },
+  { id: 'apps', label: 'Apps' },
   { id: 'videos', label: 'Videos' },
   { id: 'experience', label: 'Experience' },
   { id: 'contact', label: 'Contact' },
 ];
+
+/**
+ * Icon key from constants -> component. Kept explicit rather than importing
+ * from a barrel, so an unknown key is a type error instead of a runtime crash.
+ */
+const APP_ICON_COMPONENTS = {
+  Radar,
+  Boxes,
+  Fuel,
+  ScanText,
+  Calculator,
+  LayoutGrid,
+  TerminalSquare,
+  Youtube,
+} as const;
 
 const LANGUAGE_COLOR: Record<string, string> = {
   TypeScript: 'bg-accent-2/70',
@@ -711,6 +739,67 @@ export default function App() {
           </Stagger>
         </section>
 
+        {/* ============ APPS ============ */}
+        <section id="apps" className="mb-32 scroll-mt-32">
+          <SectionHeading icon={Rocket}>Apps &amp; Live Systems</SectionHeading>
+
+          <Reveal y={12} className="mb-9 max-w-2xl">
+            <p className="text-sm font-light leading-relaxed text-fg-subtle">
+              Systems I designed, built and deployed. Each one is running on my
+              own infrastructure and reachable at the address shown.
+            </p>
+          </Reveal>
+
+          <Stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4" gap={0.05}>
+            {APPS.map((app) => {
+              const Icon = APP_ICON_COMPONENTS[app.icon] ?? Boxes;
+              return (
+                <StaggerItem key={app.name} className="h-full">
+                  <a
+                    href={app.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex h-full flex-col overflow-hidden rounded-2xl border border-hairline bg-elev transition-colors duration-300 hover:border-accent"
+                  >
+                    <div className="relative aspect-[3/2] overflow-hidden bg-bg-solid">
+                      <img
+                        src={app.art}
+                        alt=""
+                        width={900}
+                        height={600}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-cover transition-transform duration-[900ms] group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-bg/75 via-transparent to-transparent" />
+
+                      <span className="absolute left-4 top-4 grid h-9 w-9 place-items-center rounded-xl border border-hairline bg-bg-solid/75 backdrop-blur-md">
+                        <Icon className="h-[18px] w-[18px] text-accent" aria-hidden="true" />
+                      </span>
+
+                      <span className="absolute right-4 top-4 grid h-7 w-7 place-items-center rounded-full border border-hairline bg-bg-solid/75 opacity-0 backdrop-blur-md transition-all duration-300 group-hover:opacity-100">
+                        <ArrowUpRight className="h-3.5 w-3.5 text-fg-strong" aria-hidden="true" />
+                      </span>
+                    </div>
+
+                    <div className="flex flex-grow flex-col p-5">
+                      <h3 className="mb-1.5 text-sm font-semibold text-fg-strong">
+                        {app.name}
+                      </h3>
+                      <p className="mb-4 flex-grow text-xs font-light leading-relaxed text-fg-subtle">
+                        {app.blurb}
+                      </p>
+                      <span className="truncate font-mono text-[10px] text-fg-faint">
+                        {app.detail}
+                      </span>
+                    </div>
+                  </a>
+                </StaggerItem>
+              );
+            })}
+          </Stagger>
+        </section>
+
         {/* ============ VIDEOS ============ */}
         <section id="videos" className="mb-32 scroll-mt-32">
           <SectionHeading icon={Play}>Latest Videos</SectionHeading>
@@ -725,17 +814,20 @@ export default function App() {
                     rel="noopener noreferrer"
                     className="block overflow-hidden rounded-2xl border border-hairline bg-elev transition-colors duration-300 hover:border-hairline-strong"
                   >
-                    <div className="relative aspect-video overflow-hidden bg-bg-solid/50">
+                    <div className="relative aspect-video overflow-hidden bg-bg-solid">
                       <img
                         src={video.thumbnail}
-                        alt={video.title}
+                        alt=""
+                        width={1200}
+                        height={675}
                         loading="lazy"
-                        className="h-full w-full object-cover opacity-60 transition-opacity duration-500 group-hover:opacity-80"
-                        referrerPolicy="no-referrer"
+                        decoding="async"
+                        className="h-full w-full object-cover transition-transform duration-[900ms] group-hover:scale-105"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-bg/70 via-transparent to-transparent" />
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="grid h-12 w-12 place-items-center rounded-full bg-elev-hover backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
-                          <Play className="ml-0.5 h-5 w-5 text-fg-strong" fill="white" />
+                        <div className="grid h-12 w-12 place-items-center rounded-full border border-hairline bg-bg-solid/70 backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
+                          <Play className="ml-0.5 h-5 w-5 text-fg-strong" fill="currentColor" />
                         </div>
                       </div>
                     </div>
@@ -744,7 +836,7 @@ export default function App() {
                         {video.title}
                       </h3>
                       <span className="text-[10px] uppercase tracking-wider text-fg-faint">
-                        Facebook
+                        {video.platform}
                       </span>
                     </div>
                   </a>

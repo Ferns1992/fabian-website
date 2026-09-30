@@ -30,8 +30,15 @@ for (const f of srcFiles) {
   for (const m of inClasses) {
     if (/^(bg|text|border|from|via|to|ring)-(white|zinc|emerald|sky|amber|slate|gray|neutral|stone|red|blue|green|yellow)/.test(m)) {
       // GitHub language dots in LANGUAGE_COLOR are intentionally literal.
-      const line = text.slice(0, text.indexOf(m)).split('\n').length;
-      if (f === 'App.tsx' && line >= 60 && line <= 75) continue;
+      const idx = text.indexOf(m);
+      const line = text.slice(0, idx).split('\n').length;
+      // GitHub language dots are the one intentional literal palette.
+      const inLanguageColor =
+        f === 'App.tsx' &&
+        text.indexOf('LANGUAGE_COLOR') > -1 &&
+        text.indexOf('LANGUAGE_COLOR') < idx &&
+        idx < text.indexOf('};', text.indexOf('LANGUAGE_COLOR'));
+      if (inLanguageColor) continue;
       hardcoded.push(`${f}:${line} ${m}`);
     }
   }
@@ -178,6 +185,33 @@ check('locations rendered in About', /LOCATIONS\.map/.test(app));
 check('backup email rendered in modal', /backupEmail/.test(app));
 check('theme toggle mounted', /<ThemeToggle \/>/.test(app));
 check('insight covers rendered', /post\.cover/.test(app));
+check('no external placeholder image service', !/picsum\.photos|placehold\.co|via\.placeholder/.test(constants + app));
+check('video thumbnails served locally', /\/videos\/video-\d\.webp/.test(constants));
+check('no placeholder video titles', !/"Video \d"/.test(constants));
+check('video summaries present', (constants.match(/summary:/g) ?? []).length >= 4);
+check('app list has 8 entries', (constants.match(/^    art: "\/apps\//gm) ?? []).length === 8);
+
+// Scope to the APPS array only: constants.ts also holds GitHub and Facebook
+// URLs, which are legitimately off-apex.
+const appsBlock = constants.slice(constants.indexOf('export const APPS: App[] = ['));
+const appUrls = [...appsBlock.matchAll(/url: "(https:\/\/[^"]+)"/g)].map((m) => m[1]);
+check('all app urls on sysitadmin.com', appUrls.filter((u) => !u.includes('sysitadmin.com')).length === 0,
+  appUrls.filter((u) => !u.includes('sysitadmin.com')).join(', '));
+check('app urls use https', appUrls.every((u) => u.startsWith('https://')));
+check('app art referenced in markup', /app\.art/.test(app));
+check('apps nav entry present', /id: 'apps'/.test(app));
+check('apps section present', /id="apps"/.test(app));
+
+for (const f of ['fleet-gps', 'modern-erp', 'driver-ledger', 'docchat', 'ledgerflow', 'nexus', 'terminal-hub', 'ytposter']) {
+  const p = path.join(dist, 'apps', `${f}.webp`);
+  const ok = fs.existsSync(p) && fs.statSync(p).size > 4000;
+  check(`app art ${f}.webp present (>4KB)`, ok, ok ? `${Math.round(fs.statSync(p).size / 1024)}KB` : 'missing/too small');
+}
+
+for (const m of constants.matchAll(/art:\s*"(\/apps\/[^"]+\.webp)"/g)) {
+  check(`app art ${m[1]} exists in dist`, fs.existsSync(path.join(dist, m[1].replace(/^\//, ''))));
+}
+check('video platform rendered from data', /\{video\.platform\}/.test(app));
 check('no dead "Read More" link', !/Read More/.test(app));
 
 /* ---------- 8. Cover art exists and is a real image ---------- */
@@ -186,6 +220,18 @@ for (const f of ['self-hosted-ai', 'n8n-automation', 'esp32-lora']) {
   const p = path.join(dist, 'insights', `${f}.webp`);
   const ok = fs.existsSync(p) && fs.statSync(p).size > 4000;
   check(`cover ${f}.webp present (>4KB)`, ok, ok ? `${Math.round(fs.statSync(p).size / 1024)}KB` : 'missing/too small');
+}
+
+for (const f of ['video-1', 'video-2', 'video-3', 'video-4']) {
+  const p = path.join(dist, 'videos', `${f}.webp`);
+  const ok = fs.existsSync(p) && fs.statSync(p).size > 4000;
+  check(`thumb ${f}.webp present (>4KB)`, ok, ok ? `${Math.round(fs.statSync(p).size / 1024)}KB` : 'missing/too small');
+}
+
+// Every local asset referenced by the data must actually exist in dist.
+for (const m of constants.matchAll(/(?:cover|thumbnail):\s*"(\/[^"]+\.webp)"/g)) {
+  const ok = fs.existsSync(path.join(dist, m[1].replace(/^\//, '')));
+  check(`referenced asset ${m[1]} exists in dist`, ok, ok ? '' : 'broken reference');
 }
 
 /* ---------- 9. Reduced motion still intact ---------- */

@@ -176,29 +176,151 @@ export const BLOG_POSTS: Insight[] = [
   },
 ];
 
-export const VIDEOS = [
+export type Video = {
+  title: string;
+  /** One line of context, shown under the title. */
+  summary: string;
+  thumbnail: string;
+  url: string;
+  platform: string;
+  /** Present only where the project is actually deployed. */
+  projectUrl?: string;
+  repoUrl?: string;
+};
+
+export const VIDEOS: Video[] = [
   {
-    title: "Video 1",
-    thumbnail: "https://picsum.photos/seed/v1/600/400",
+    title: "Modern ERP",
+    summary: "Full ERP and inventory management covering stock, purchasing and suppliers.",
+    thumbnail: "/videos/video-1.webp",
     url: "https://www.facebook.com/share/v/1K2vR5pTa1/",
     platform: "facebook",
+    projectUrl: "https://modernerp.sysitadmin.com/",
+    repoUrl: "https://github.com/Ferns1992/modernerp",
   },
   {
-    title: "Video 2",
-    thumbnail: "https://picsum.photos/seed/v2/600/400",
+    title: "Chhoto URL",
+    summary: "Self-hosted URL shortener, deployed with Docker Compose.",
+    thumbnail: "/videos/video-2.webp",
     url: "https://www.facebook.com/share/v/1EFRVk5cQc/",
     platform: "facebook",
+    repoUrl: "https://github.com/Ferns1992/chhoto-url",
+
   },
   {
-    title: "Video 3",
-    thumbnail: "https://picsum.photos/seed/v3/600/400",
+    title: "Vaultwarden",
+    summary: "Self-hosted Bitwarden-compatible password manager on Docker Compose.",
+    thumbnail: "/videos/video-3.webp",
     url: "https://www.facebook.com/share/v/1BgWUSWDTF/",
     platform: "facebook",
+    repoUrl: "https://github.com/Ferns1992/vaultwarden",
   },
   {
-    title: "Video 4",
-    thumbnail: "https://picsum.photos/seed/v4/600/400",
+    title: "Baserow",
+    summary: "Self-hosted Baserow, an open-source no-code database platform.",
+    thumbnail: "/videos/video-4.webp",
     url: "https://www.facebook.com/share/v/18QV5eCze1/",
     platform: "facebook",
+    repoUrl: "https://github.com/Ferns1992/baserow",
+  },
+];
+
+
+export type App = {
+  name: string;
+  /** One line, factual, no marketing adjectives. */
+  blurb: string;
+  url: string;
+  icon: AppIconKey;
+  /** Which subdomain / stack this runs on, shown as a small detail line. */
+  detail: string;
+  /** Generated schematic artwork, see scripts/gen-insight-covers.mjs. */
+  art: string;
+};
+
+/**
+ * Live deployments. Every URL here was checked reachable before being added.
+ *
+ * `detail` is factual infrastructure, not a feature claim: three of these are
+ * auth-gated, which is why the cards link out rather than embedding anything.
+ */
+/** Icon keys resolved in App.tsx against this map. */
+export const APP_ICONS = {
+  Radar: "Radar",
+  Boxes: "Boxes",
+  Fuel: "Fuel",
+  ScanText: "ScanText",
+  Calculator: "Calculator",
+  LayoutGrid: "LayoutGrid",
+  TerminalSquare: "TerminalSquare",
+  Youtube: "Youtube",
+} as const;
+
+export type AppIconKey = keyof typeof APP_ICONS;
+
+export const APPS: App[] = [
+  {
+    name: "Fleet GPS",
+    blurb: "Live vehicle tracking and fleet position monitoring.",
+    url: "https://fleetgps.sysitadmin.com/",
+    icon: "Radar",
+    detail: "fleetgps.sysitadmin.com",
+    art: "/apps/fleet-gps.webp",
+  },
+  {
+    name: "Modern ERP",
+    blurb: "Inventory, checkout, kitchen display and reporting for small business.",
+    url: "https://modernerp.sysitadmin.com/",
+    icon: "Boxes",
+    detail: "modernerp.sysitadmin.com",
+    art: "/apps/modern-erp.webp",
+  },
+  {
+    name: "Driver Ledger",
+    blurb: "Fuel consumption and cost tracking built for Philippine delivery fleets.",
+    url: "https://driverledger.sysitadmin.com/",
+    icon: "Fuel",
+    detail: "driverledger.sysitadmin.com",
+    art: "/apps/driver-ledger.webp",
+  },
+  {
+    name: "DocChat",
+    blurb: "Retrieval-augmented chat over your own documents, with a self-hosted OCR pipeline.",
+    url: "https://dococr.sysitadmin.com/",
+    icon: "ScanText",
+    detail: "Auth-gated",
+    art: "/apps/docchat.webp",
+  },
+  {
+    name: "LedgerFlow",
+    blurb: "Double-entry accounting, asset tracking and purchase records.",
+    url: "https://ledgerflow.sysitadmin.com/",
+    icon: "Calculator",
+    detail: "ledgerflow.sysitadmin.com",
+    art: "/apps/ledgerflow.webp",
+  },
+  {
+    name: "Nexus Dashboard",
+    blurb: "Self-hosted dashboard for the services you run.",
+    url: "https://nexus.sysitadmin.com/",
+    icon: "LayoutGrid",
+    detail: "nexus.sysitadmin.com",
+    art: "/apps/nexus.webp",
+  },
+  {
+    name: "Terminal Hub",
+    blurb: "Web-based access point for terminal and shell sessions.",
+    url: "https://terminal.sysitadmin.com/",
+    icon: "TerminalSquare",
+    detail: "Auth-gated",
+    art: "/apps/terminal-hub.webp",
+  },
+  {
+    name: "Video Auto Poster",
+    blurb: "Automated YouTube publishing pipeline with scheduling.",
+    url: "https://ytposter.sysitadmin.com/",
+    icon: "Youtube",
+    detail: "Auth-gated",
+    art: "/apps/ytposter.webp",
   },
 ];

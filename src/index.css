@@ -8,10 +8,93 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
 }
 
 body {
   background-color: #0a0a0a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Faint technical grid, faded out toward the bottom of the viewport. */
+.grid-backdrop {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.032) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.032) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 65% at 50% 0%, #000 15%, transparent 78%);
+  mask-image: radial-gradient(ellipse 90% 65% at 50% 0%, #000 15%, transparent 78%);
+}
+
+/* Slowly drifting aurora wash behind the hero. */
+@keyframes aurora {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.55; }
+  33%      { transform: translate3d(4%, -3%, 0) scale(1.12); opacity: 0.8; }
+  66%      { transform: translate3d(-3%, 4%, 0) scale(0.95); opacity: 0.45; }
+}
+
+.aurora {
+  animation: aurora 22s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Gradient text with a travelling highlight. */
+.animate-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    #ffffff 0%,
+    #a1a1aa 18%,
+    #ffffff 36%,
+    #a1a1aa 54%,
+    #ffffff 72%,
+    #a1a1aa 90%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 7s linear infinite;
+}
+
+@keyframes shimmer {
+  from { background-position: 160% 0; }
+  to   { background-position: -60% 0; }
+}
+
+/* Breathing pulse for the "available" dot. */
+@keyframes halo {
+  0%   { transform: scale(1);   opacity: 0.55; }
+  70%  { transform: scale(2.6); opacity: 0; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+.halo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: halo 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Single place to switch every effect off, including CSS-only ones. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .aurora,
+  .animate-shimmer,
+  .halo::after {
+    animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 .glass-morphism {

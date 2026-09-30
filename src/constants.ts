@@ -62,84 +62,79 @@ export const PORTFOLIO = [
   },
 ];
 
-export const GITHUB_REPOS = [
+export type Repo = {
+  name: string;
+  description: string;
+  url: string;
+  /** Present only for projects that are actually deployed and reachable. */
+  liveUrl?: string;
+  language: string;
+};
+
+export const GITHUB_REPOS: Repo[] = [
   {
-    name: "seismic-watch",
-    description: "Real-time underwater earthquake tracking web application with 3D globe visualization",
-    url: "https://github.com/Ferns1992/seismic-watch",
-    language: "TypeScript",
-    stars: 0,
-    forks: 0,
+    name: "dococr-agent",
+    description: "Multi-user RAG over your own documents, with cited answers and a self-hosted OCR pipeline.",
+    url: "https://github.com/Ferns1992/dococr-agent",
+    liveUrl: "https://dococr.sysitadmin.com",
+    language: "Python",
   },
   {
-    name: "fabian-website",
-    description: "Personal portfolio website built with React, Vite, and Tailwind CSS",
-    url: "https://github.com/Ferns1992/fabian-website",
-    language: "TypeScript",
-    stars: 0,
-    forks: 0,
+    name: "driver-ledger-ph",
+    description: "Fuel consumption and cost tracker built for Philippine delivery fleets. Offline-first, nightly backups.",
+    url: "https://github.com/Ferns1992/driver-ledger-ph",
+    liveUrl: "https://driverledger.sysitadmin.com",
+    language: "HTML",
+  },
+  {
+    name: "auth-app",
+    description: "Dockerized authentication gateway for self-hosted services. Single sign-on across a private stack.",
+    url: "https://github.com/Ferns1992/auth-app",
+    language: "EJS",
   },
   {
     name: "modernerp",
-    description: "Modern ERP & Inventory Management System",
+    description: "Modern ERP and inventory management system covering stock, purchasing and supplier records.",
     url: "https://github.com/Ferns1992/modernerp",
     language: "TypeScript",
-    stars: 0,
-    forks: 0,
-  },
-  {
-    name: "modernpos",
-    description: "Modern POS (Point of Sale) system",
-    url: "https://github.com/Ferns1992/modernpos",
-    language: "TypeScript",
-    stars: 0,
-    forks: 0,
-  },
-  {
-    name: "n8n-chat",
-    description: "Vector paperless chat app with n8n integration",
-    url: "https://github.com/Ferns1992/n8n-chat",
-    language: "TypeScript",
-    stars: 0,
-    forks: 0,
-  },
-  {
-    name: "polymarket-trader",
-    description: "Polymarket trading interface",
-    url: "https://github.com/Ferns1992/polymarket-trader",
-    language: "HTML",
-    stars: 0,
-    forks: 0,
-  },
-  {
-    name: "dataflowrag",
-    description: "Dataflow RAG (Retrieval Augmented Generation) system",
-    url: "https://github.com/Ferns1992/dataflowrag",
-    language: "TypeScript",
-    stars: 0,
-    forks: 0,
   },
   {
     name: "nexus-dashboard",
-    description: "Nexus dashboard for system monitoring",
+    description: "Self-hosted link dashboard for the services running across my home lab and VPS fleet.",
     url: "https://github.com/Ferns1992/nexus-dashboard",
+    liveUrl: "https://nexus.sysitadmin.com",
     language: "TypeScript",
-    stars: 0,
-    forks: 0,
   },
   {
     name: "ledgerflow",
-    description: "Financial ledger and accounting flow system",
+    description: "Financial ledger and accounting flow system with double-entry bookkeeping and reporting.",
     url: "https://github.com/Ferns1992/ledgerflow",
     language: "TypeScript",
-    stars: 0,
-    forks: 0,
+  },
+  {
+    name: "markitdown-app",
+    description: "Converts PDFs, documents and spreadsheets into clean, LLM-ready Markdown.",
+    url: "https://github.com/Ferns1992/markitdown-app",
+    language: "HTML",
+  },
+  {
+    name: "8-BIT-Racer",
+    description: "Retro arcade racer built with canvas rendering and a hand-rolled physics loop.",
+    url: "https://github.com/Ferns1992/8-BIT-Racer",
+    language: "TypeScript",
+  },
+  {
+    name: "skymount-resort-tanay",
+    description: "Booking website for a resort in Tanay, Rizal, with availability and reservation handling.",
+    url: "https://github.com/Ferns1992/skymount-resort-tanay",
+    language: "HTML",
   },
 ];
 
 export const TECH_BADGES = [
-  "React", "TypeScript", "Vite", "Tailwind", "Node.js", "Docker", 
-  "Kubernetes", "Proxmox", "AI/ML", "n8n", "PostgreSQL", "Redis"
+  "React", "TypeScript", "Vite", "Tailwind", "Node.js", "Docker",
+  "Kubernetes", "Proxmox", "AI/ML", "n8n", "PostgreSQL", "Redis",
+  "Python", "FastAPI", "Cloudflare", "R2", "Meshtastic", "LoRa",
 ];
 
 export const STATS = [

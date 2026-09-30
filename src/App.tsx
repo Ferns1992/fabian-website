@@ -1,32 +1,74 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Github, 
-  Mail, 
-  ExternalLink, 
-  ChevronRight, 
-  Cpu, 
-  Globe, 
-  Database, 
-  Terminal, 
-  Briefcase, 
-  User, 
-  BookOpen,
-  Menu,
-  X,
+import React, { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import {
   ArrowRight,
-  Play
+  BookOpen,
+  Briefcase,
+  ChevronRight,
+  Cpu,
+  Database,
+  ExternalLink,
+  Github,
+  Globe,
+  Mail,
+  Menu,
+  Play,
+  Radio,
+  Terminal,
+  User,
+  X,
+  Zap,
 } from 'lucide-react';
-import { PERSONAL_INFO, SKILLS, EXPERIENCE, PORTFOLIO, BLOG_POSTS, GITHUB_REPOS, TECH_BADGES, STATS, VIDEOS } from './constants';
+import {
+  BLOG_POSTS,
+  EXPERIENCE,
+  GITHUB_REPOS,
+  PERSONAL_INFO,
+  PORTFOLIO,
+  SKILLS,
+  STATS,
+  TECH_BADGES,
+  VIDEOS,
+} from './constants';
+import FlowField from './canvas/FlowField';
+import {
+  Card,
+  CountUp,
+  CursorGlow,
+  DrawLine,
+  Magnetic,
+  Marquee,
+  NoiseOverlay,
+  ParallaxPortrait,
+  Preloader,
+  Reveal,
+  ScrollProgress,
+  SectionHeading,
+  ShimmerText,
+  SplitText,
+  Stagger,
+  StaggerItem,
+  useMotionPrefs,
+} from './animations';
 
-const SectionHeading = ({ children, icon: Icon }: { children: React.ReactNode, icon: any }) => (
-  <div className="flex items-center gap-3 mb-10">
-    <div className="p-2 bg-white/[0.03] rounded-lg">
-      <Icon className="w-5 h-5 text-zinc-500" />
-    </div>
-    <h2 className="text-2xl font-medium tracking-tight text-zinc-200">{children}</h2>
-  </div>
-);
+const NAV_ITEMS = [
+  { id: 'home', label: 'Home' },
+  { id: 'about', label: 'About' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'portfolio', label: 'Portfolio' },
+  { id: 'videos', label: 'Videos' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'contact', label: 'Contact' },
+];
+
+const LANGUAGE_COLOR: Record<string, string> = {
+  TypeScript: 'bg-sky-400/70',
+  JavaScript: 'bg-amber-400/70',
+  Python: 'bg-emerald-400/70',
+  HTML: 'bg-orange-400/70',
+  CSS: 'bg-pink-400/70',
+  EJS: 'bg-teal-400/70',
+};
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home');
@@ -36,606 +78,750 @@ export default function App() {
 
   useEffect(() => {
     document.title = `${PERSONAL_INFO.name} | IT & AI Engineer`;
+
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 400);
-      const sections = navItems.map(item => item.id);
-      const current = sections.find(section => {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          return rect.top <= 150 && rect.bottom >= 150;
-        }
-        return false;
-      });
-      if (current) setActiveSection(current);
+      setShowScrollTop(window.scrollY > 600);
+
+      // Pick the section whose top is the last one above the reading line,
+      // rather than the first that merely overlaps it.
+      const line = 160;
+      let current = NAV_ITEMS[0].id;
+      for (const item of NAV_ITEMS) {
+        const el = document.getElementById(item.id);
+        if (!el) continue;
+        if (el.getBoundingClientRect().top <= line) current = item.id;
+      }
+
+      // At the very bottom the last section can never reach the line.
+      if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 80) {
+        current = NAV_ITEMS[NAV_ITEMS.length - 1].id;
+      }
+
+      setActiveSection(current);
     };
-    window.addEventListener('scroll', handleScroll);
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItems = [
-    { id: 'home', label: 'Home' },
-    { id: 'about', label: 'About' },
-    { id: 'github', label: 'Projects' },
-    { id: 'portfolio', label: 'Portfolio' },
-    { id: 'videos', label: 'Videos' },
-    { id: 'experience', label: 'Experience' },
-    { id: 'blog', label: 'Blog' },
-    { id: 'contact', label: 'Contact' },
-  ];
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen || isHireModalOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen, isHireModalOpen]);
 
-  const handleHireClick = () => {
-    setIsHireModalOpen(true);
+  const closeAll = () => {
+    setIsMenuOpen(false);
+    setIsHireModalOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-zinc-300 font-sans selection:bg-emerald-500/30">
-      {/* Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-5%] left-[20%] w-[30%] h-[30%] bg-gradient-to-br from-emerald-500/5 to-transparent blur-[150px] rounded-full" />
-        <div className="absolute bottom-[-5%] right-[20%] w-[25%] h-[25%] bg-gradient-to-tl from-blue-500/5 to-transparent blur-[120px] rounded-full" />
-        <div className="absolute top-[40%] left-[50%] w-[20%] h-[20%] bg-gradient-to-r from-amber-500/3 to-transparent blur-[100px] rounded-full" />
+    <div className="relative min-h-screen bg-[#0a0a0a] font-sans text-zinc-300 antialiased selection:bg-emerald-400/30 selection:text-white">
+      <Preloader />
+      <ScrollProgress />
+
+      {/* --- ambient background stack --- */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <FlowField />
+        <div className="grid-backdrop absolute inset-0" />
+        <div className="aurora absolute -top-[20%] left-[15%] h-[45vh] w-[45vh] rounded-full bg-emerald-500/[0.07] blur-[130px]" />
+        <div className="aurora absolute right-[10%] top-[35%] h-[38vh] w-[38vh] rounded-full bg-sky-500/[0.055] blur-[130px]" style={{ animationDelay: '-7s' }} />
+        <div className="aurora absolute bottom-[5%] left-[45%] h-[32vh] w-[32vh] rounded-full bg-amber-500/[0.04] blur-[120px]" style={{ animationDelay: '-14s' }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a0a]" />
       </div>
 
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-[#0a0a0a]/70 backdrop-blur-lg border-b border-white/[0.05]">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-xl font-semibold text-white tracking-tight"
+      <CursorGlow />
+      <NoiseOverlay />
+
+      {/* --- nav --- */}
+      <nav className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.05] bg-[#0a0a0a]/70 backdrop-blur-xl">
+        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
+          <motion.a
+            href="#home"
+            initial={{ opacity: 0, y: -14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="text-lg font-semibold tracking-tight text-white"
           >
             FABIAN<span className="text-emerald-400">.</span>
-          </motion.div>
+          </motion.a>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
+          <div className="hidden items-center gap-1 md:flex">
+            {NAV_ITEMS.map((item) => (
               <a
                 key={item.id}
                 href={`#${item.id}`}
-                className={`text-sm font-medium transition-colors hover:text-white ${
-                  activeSection === item.id ? 'text-zinc-200' : 'text-zinc-500'
+                className={`relative rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
+                  activeSection === item.id
+                    ? 'text-zinc-100'
+                    : 'text-zinc-500 hover:text-zinc-300'
                 }`}
               >
-                {item.label}
+                {activeSection === item.id ? (
+                  <motion.span
+                    layoutId="nav-pill"
+                    className="absolute inset-0 rounded-full bg-white/[0.07] ring-1 ring-inset ring-white/[0.06]"
+                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                  />
+                ) : null}
+                <span className="relative">{item.label}</span>
               </a>
             ))}
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleHireClick}
-              className="px-5 py-2 bg-white/10 text-zinc-200 font-medium text-sm rounded-full hover:bg-white/15 transition-all border border-white/5"
-            >
-              Hire Me
-            </motion.button>
+
+            <Magnetic className="ml-3" strength={0.25}>
+              <button
+                onClick={() => setIsHireModalOpen(true)}
+                className="rounded-full border border-white/10 bg-white/[0.06] px-5 py-2 text-sm font-medium text-zinc-100 transition-colors hover:bg-white/[0.12]"
+              >
+                Hire Me
+              </button>
+            </Magnetic>
           </div>
 
-          {/* Mobile Toggle */}
-          <button className="md:hidden text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          <button
+            className="text-zinc-200 md:hidden"
+            onClick={() => setIsMenuOpen((v) => !v)}
+            aria-label="Toggle menu"
+            aria-expanded={isMenuOpen}
+          >
             {isMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
       </nav>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
-        {isMenuOpen && (
+        {isMenuOpen ? (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-[#0a0a0a] pt-24 px-6 md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-[#0a0a0a]/95 pt-28 backdrop-blur-xl md:hidden"
           >
-            <div className="flex flex-col gap-6">
-              {navItems.map((item) => (
-                <a
+            <div className="flex flex-col gap-2 px-6">
+              {NAV_ITEMS.map((item, i) => (
+                <motion.a
                   key={item.id}
                   href={`#${item.id}`}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="text-2xl font-bold text-zinc-500 hover:text-white transition-colors"
+                  onClick={closeAll}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.05 + i * 0.05 }}
+                  className="border-b border-white/[0.05] py-4 text-2xl font-medium text-zinc-400"
                 >
                   {item.label}
-                </a>
+                </motion.a>
               ))}
-              <button 
-                onClick={() => { setIsMenuOpen(false); handleHireClick(); }}
-                className="w-full py-4 bg-emerald-500 text-black font-bold rounded-xl"
+              <button
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setIsHireModalOpen(true);
+                }}
+                className="mt-6 rounded-xl bg-emerald-400 py-4 font-semibold text-black"
               >
                 Hire Me
               </button>
             </div>
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
 
-      {/* Hire Me Modal */}
+      {/* --- hire modal --- */}
       <AnimatePresence>
-        {isHireModalOpen && (
+        {isHireModalOpen ? (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsHireModalOpen(false)}
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={closeAll}
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 24 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="relative w-full max-w-md bg-[#0f0f0f] border border-white/[0.08] rounded-2xl p-8 shadow-2xl"
+              exit={{ opacity: 0, scale: 0.94, y: 24 }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0f0f0f] p-8 shadow-2xl"
             >
-              <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/[0.1] to-transparent" />
-              <button 
-                onClick={() => setIsHireModalOpen(false)}
-                className="absolute top-4 right-4 text-zinc-600 hover:text-zinc-400 transition-colors"
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+              <button
+                onClick={closeAll}
+                aria-label="Close"
+                className="absolute right-4 top-4 text-zinc-600 transition-colors hover:text-zinc-300"
               >
-                <X className="w-5 h-5" />
+                <X className="h-5 w-5" />
               </button>
-              
-              <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-white/[0.03] rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Mail className="w-7 h-7 text-zinc-500" />
-                </div>
-                <h3 className="text-2xl font-medium text-white mb-2">Let's Work Together</h3>
-                <p className="text-sm text-zinc-500">Ready to take your projects to the next level?</p>
+
+              <div className="mb-8 text-center">
+                <motion.div
+                  initial={{ scale: 0.6, rotate: -20 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: 'spring', damping: 14, delay: 0.1 }}
+                  className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-2xl bg-white/[0.03]"
+                >
+                  <Mail className="h-7 w-7 text-emerald-400" />
+                </motion.div>
+                <h3 className="mb-2 text-2xl font-medium text-white">Let's Work Together</h3>
+                <p className="text-sm text-zinc-500">
+                  Remote IT support, AI automation, or a full build.
+                </p>
               </div>
 
               <div className="space-y-3">
-                <a 
+                <a
                   href={`mailto:${PERSONAL_INFO.email}`}
-                  className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/[0.06] rounded-xl hover:bg-white/[0.04] hover:border-white/[0.1] transition-all group"
+                  className="group flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 transition-colors hover:border-emerald-400/30 hover:bg-white/[0.04]"
                 >
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-4 h-4 text-zinc-600" />
-                    <span className="text-sm font-medium text-zinc-400">{PERSONAL_INFO.email}</span>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-zinc-700 group-hover:translate-x-0.5 transition-transform" />
+                  <span className="flex items-center gap-3">
+                    <Mail className="h-4 w-4 text-zinc-500" />
+                    <span className="text-sm font-medium text-zinc-300">
+                      {PERSONAL_INFO.email}
+                    </span>
+                  </span>
+                  <ArrowRight className="h-4 w-4 text-zinc-700 transition-transform group-hover:translate-x-1" />
                 </a>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-white/[0.06] text-center">
-                <p className="text-xs text-zinc-600 uppercase tracking-wider font-medium">Available for freelance & full-time</p>
+              <div className="mt-8 border-t border-white/[0.06] pt-6 text-center">
+                <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-600">
+                  Available for freelance &amp; full-time
+                </p>
               </div>
             </motion.div>
           </div>
-        )}
+        ) : null}
       </AnimatePresence>
 
-      {/* Scroll to Top */}
       <AnimatePresence>
-        {showScrollTop && (
+        {showScrollTop ? (
           <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
+            exit={{ opacity: 0, scale: 0.7 }}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="fixed bottom-6 right-6 z-50 p-3 bg-white/[0.05] text-zinc-400 rounded-full border border-white/[0.06] hover:bg-white/[0.08] hover:text-white transition-colors"
+            aria-label="Back to top"
+            className="fixed bottom-6 right-6 z-50 grid h-11 w-11 place-items-center rounded-full border border-white/[0.08] bg-white/[0.05] text-zinc-300 backdrop-blur-xl transition-colors hover:bg-white/[0.1]"
           >
-            <ChevronRight className="w-5 h-5 -rotate-90" />
+            <ChevronRight className="h-5 w-5 -rotate-90" />
           </motion.button>
-        )}
+        ) : null}
       </AnimatePresence>
 
-      <main className="max-w-7xl mx-auto px-6 pt-32 pb-20">
-        {/* Hero Section */}
-        <section id="home" className="min-h-[85vh] flex flex-col lg:flex-row items-center justify-between mb-40 relative gap-12 pt-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="z-10 flex-1 max-w-2xl"
-          >
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
+      <main className="relative z-10 mx-auto max-w-6xl px-6 pb-24 pt-32">
+        {/* ============ HERO ============ */}
+        <section
+          id="home"
+          className="mb-28 flex min-h-[88vh] flex-col items-center gap-16 pt-8 lg:flex-row lg:justify-between"
+        >
+          <div className="z-10 max-w-2xl flex-1">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.025] border border-white/[0.08] text-zinc-500 text-[11px] font-medium uppercase tracking-[0.25em] mb-8"
+              transition={{ delay: 0.15, duration: 0.6 }}
+              className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-white/[0.08] bg-white/[0.025] px-3.5 py-1.5 text-[11px] font-medium uppercase tracking-[0.25em] text-zinc-400"
             >
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400/30"></span>
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400/50" />
+              <span className="halo relative inline-flex h-1.5 w-1.5 text-emerald-400">
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
               </span>
               Available for Projects
             </motion.div>
-            
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-6xl md:text-8xl lg:text-9xl font-medium text-white tracking-tight mb-6 leading-[0.9]"
-            >
-              Hi, I'm <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-400">Fabian Milton</span>
-            </motion.h1>
-            
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="text-base md:text-lg text-zinc-500 max-w-lg mb-10 leading-relaxed font-light"
-            >
-              {PERSONAL_INFO.title}. Building elegant solutions at the intersection of <span className="text-zinc-400">AI & Infrastructure</span>.
-            </motion.p>
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="flex flex-wrap items-center gap-5"
-            >
-              <motion.button 
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleHireClick}
-                className="px-8 py-4 bg-white text-zinc-900 font-medium rounded-xl hover:bg-zinc-100 transition-all flex items-center gap-2.5 group"
-              >
-                <span>Let's Talk</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </motion.button>
-               
-              <div className="flex items-center gap-1.5">
-                <a href={PERSONAL_INFO.github} target="_blank" rel="noopener noreferrer" className="p-3.5 text-zinc-600 hover:text-zinc-300 hover:bg-white/[0.03] rounded-xl transition-all">
-                  <Github className="w-5 h-5" />
+
+            <h1 className="mb-6 text-5xl font-medium leading-[0.92] tracking-tight text-white sm:text-7xl lg:text-8xl">
+              <SplitText text="Hi, I'm" delay={0.25} />
+              <br />
+              <SplitText
+                text="Fabian Milton"
+                delay={0.42}
+                className="block"
+                wordClassName="animate-shimmer bg-clip-text text-transparent"
+              />
+            </h1>
+
+            <Reveal delay={0.75} y={18} blur={4}>
+              <p className="mb-4 max-w-lg text-base font-light leading-relaxed text-zinc-400 md:text-lg">
+                {PERSONAL_INFO.title}.
+              </p>
+            </Reveal>
+
+            <Reveal delay={0.85} y={18} blur={4}>
+              <p className="mb-10 max-w-lg text-sm font-light leading-relaxed text-zinc-500">
+                Self-hosted AI platforms, container orchestration, and the unglamorous
+                infrastructure that keeps it all running. Based in the Philippines,
+                working with clients worldwide.
+              </p>
+            </Reveal>
+
+            <div className="flex flex-wrap items-center gap-5">
+              <Magnetic strength={0.3}>
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setIsHireModalOpen(true)}
+                  className="group flex items-center gap-2.5 rounded-xl bg-white px-8 py-4 font-medium text-zinc-900 transition-colors hover:bg-zinc-100"
+                >
+                  Let's Talk
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </motion.button>
+              </Magnetic>
+
+              <Magnetic strength={0.35}>
+                <a
+                  href={PERSONAL_INFO.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 rounded-xl border border-white/[0.08] px-5 py-4 text-sm font-medium text-zinc-400 transition-colors hover:border-white/20 hover:text-white"
+                >
+                  <Github className="h-4 w-4" />
+                  GitHub
                 </a>
-              </div>
-            </motion.div>
-
-            {/* Quick Stats */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.9, duration: 0.6 }}
-              className="flex flex-wrap gap-8 mt-14 pt-8 border-t border-white/[0.05]"
-            >
-              {STATS.map((stat, i) => (
-                <div key={i} className="group">
-                  <div className="text-2xl md:text-3xl font-medium text-white">{stat.value}</div>
-                  <div className="text-[10px] uppercase tracking-widest text-zinc-600 mt-1">{stat.label}</div>
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          {/* Hero Image / Premium Frame */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-            className="relative flex-1 flex justify-center lg:justify-end"
-          >
-            <div className="relative w-72 h-72 md:w-[420px] md:h-[520px] lg:w-[480px] lg:h-[600px] group">
-              {/* Background Aura */}
-              <div className="absolute inset-10 bg-gradient-to-br from-zinc-800/30 via-zinc-900/50 to-black/80 blur-3xl rounded-full" />
-              
-              {/* Decorative ring */}
-              <div className="absolute -inset-1 border border-white/[0.04] rounded-[60px] md:rounded-[80px]" />
-              <div className="absolute -inset-3 border border-white/[0.02] rounded-[70px] md:rounded-[100px]" />
-              
-              {/* Main Image Container */}
-              <div className="absolute inset-0 rounded-[50px] md:rounded-[70px] overflow-hidden border border-white/[0.06] bg-zinc-900/60 backdrop-blur-xl shadow-2xl transform transition-transform duration-700 group-hover:scale-[1.005]">
-                <img 
-                  src="/profile.webp"
-                  alt={PERSONAL_INFO.name}
-                  className="w-full h-full object-cover object-[center_15%] transition-all duration-1000 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[transparent_30%] to-transparent opacity-70" />
-              </div>
-
-              {/* Floating cards - refined */}
-              <motion.div 
-                animate={{ y: [0, -12, 0] }}
-                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -right-4 md:-right-8 top-24 p-4 bg-zinc-900/70 backdrop-blur-xl border border-white/[0.05] rounded-2xl hidden md:block"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-white/[0.04] rounded-xl flex items-center justify-center">
-                    <Cpu className="w-4 h-4 text-zinc-400" />
-                  </div>
-                  <div>
-                    <p className="text-[9px] uppercase tracking-widest text-zinc-600 font-medium mb-0.5">Expertise</p>
-                    <p className="text-sm font-medium text-zinc-300">AI & Automation</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div 
-                animate={{ y: [0, 12, 0] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-                className="absolute -left-4 md:-left-8 bottom-32 p-4 bg-zinc-900/70 backdrop-blur-xl border border-white/[0.05] rounded-2xl hidden md:block"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-white/[0.04] rounded-xl flex items-center justify-center">
-                    <Terminal className="w-4 h-4 text-zinc-400" />
-                  </div>
-                  <div>
-                    <p className="text-[9px] uppercase tracking-widest text-zinc-600 font-medium mb-0.5">Role</p>
-                    <p className="text-sm font-medium text-zinc-300">System Architect</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Corner accent */}
-              <div className="absolute -bottom-2 -right-2 w-16 h-16 border border-white/[0.08] rounded-2xl rotate-45 hidden md:block" />
+              </Magnetic>
             </div>
-          </motion.div>
 
-          {/* Tech Stack Badges - moved below */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.1, duration: 0.6 }}
-            className="w-full flex flex-wrap gap-2 justify-center lg:justify-start mt-16"
-          >
-            {TECH_BADGES.slice(0, 6).map((badge, i) => (
-              <span 
-                key={i} 
-                className="px-3 py-1.5 bg-white/[0.02] border border-white/[0.04] rounded-full text-[11px] text-zinc-500 hover:text-zinc-400 hover:border-white/[0.08] transition-all cursor-default"
+            <Stagger
+              className="mt-14 grid grid-cols-2 gap-x-8 gap-y-8 border-t border-white/[0.06] pt-8 sm:grid-cols-4"
+              gap={0.09}
+              delay={0.2}
+            >
+              {STATS.map((stat) => (
+                <StaggerItem key={stat.label}>
+                  <div className="text-2xl font-medium text-white md:text-3xl">
+                    <CountUp value={stat.value} />
+                  </div>
+                  <div className="mt-1 text-[10px] uppercase tracking-widest text-zinc-500">
+                    {stat.label}
+                  </div>
+                </StaggerItem>
+              ))}
+            </Stagger>
+          </div>
+
+          {/* portrait */}
+          <div className="relative flex flex-1 justify-center lg:justify-end">
+            <ParallaxPortrait className="relative w-72 md:w-[380px]">
+              <div className="relative aspect-[4/5] w-full">
+                <div className="absolute inset-8 rounded-full bg-emerald-500/10 blur-[90px]" />
+                <div className="absolute -inset-1 rounded-[56px] border border-white/[0.05]" />
+                <div className="absolute -inset-3 rounded-[68px] border border-white/[0.02]" />
+
+                <div className="group absolute inset-0 overflow-hidden rounded-[48px] border border-white/[0.07] bg-zinc-900/60 shadow-2xl backdrop-blur-xl">
+                  <img
+                    src="/profile.webp"
+                    alt={PERSONAL_INFO.name}
+                    width={900}
+                    height={900}
+                    className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-60" />
+                </div>
+
+                <motion.div
+                  animate={{ y: [0, -12, 0] }}
+                  transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute -right-3 top-20 hidden rounded-2xl border border-white/[0.07] bg-zinc-900/80 p-4 backdrop-blur-xl md:block lg:-right-8"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="grid h-9 w-9 place-items-center rounded-xl bg-white/[0.04]">
+                      <Cpu className="h-4 w-4 text-emerald-400" />
+                    </div>
+                    <div>
+                      <p className="mb-0.5 text-[9px] font-medium uppercase tracking-widest text-zinc-500">
+                        Expertise
+                      </p>
+                      <p className="text-sm font-medium text-zinc-200">AI &amp; Automation</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  animate={{ y: [0, 12, 0] }}
+                  transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+                  className="absolute -left-3 bottom-24 hidden rounded-2xl border border-white/[0.07] bg-zinc-900/80 p-4 backdrop-blur-xl md:block lg:-left-8"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="grid h-9 w-9 place-items-center rounded-xl bg-white/[0.04]">
+                      <Terminal className="h-4 w-4 text-sky-400" />
+                    </div>
+                    <div>
+                      <p className="mb-0.5 text-[9px] font-medium uppercase tracking-widest text-zinc-500">
+                        Role
+                      </p>
+                      <p className="text-sm font-medium text-zinc-200">System Architect</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </ParallaxPortrait>
+          </div>
+        </section>
+
+        {/* ============ TECH MARQUEE ============ */}
+        <section className="mb-28 border-y border-white/[0.05] py-6">
+          <Reveal y={14} blur={3} className="mb-4 text-center">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-zinc-600">
+              Working with
+            </p>
+          </Reveal>
+          <Marquee speed={38}>
+            {TECH_BADGES.map((badge) => (
+              <span
+                key={badge}
+                className="shrink-0 rounded-full border border-white/[0.06] bg-white/[0.02] px-4 py-2 text-xs text-zinc-400 transition-colors hover:border-emerald-400/25 hover:text-zinc-200"
               >
                 {badge}
               </span>
             ))}
-          </motion.div>
+          </Marquee>
         </section>
 
-        {/* About Section */}
+        {/* ============ ABOUT ============ */}
         <section id="about" className="mb-32 scroll-mt-32">
           <SectionHeading icon={User}>About Me</SectionHeading>
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-white/[0.08] to-white/[0.03] rounded-3xl blur opacity-30 group-hover:opacity-50 transition duration-700"></div>
-              <div className="relative aspect-square rounded-3xl overflow-hidden bg-zinc-900 border border-white/[0.06]">
-                <img 
-                  src="/about.jpg"
-                  alt="Fabian Milton Fernandes" 
-                  className="w-full h-full object-cover transition-all duration-700 group-hover:scale-103"
-                />
-              </div>
-            </div>
-            <div>
-              <p className="text-lg text-zinc-500 leading-relaxed mb-8 font-light">
-                {PERSONAL_INFO.bio}
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {SKILLS.map((skill, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-white/[0.02] border border-white/[0.04] rounded-xl hover:border-white/[0.08] transition-colors">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
-                    <span className="text-sm font-medium text-zinc-500">{skill.name}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-10">
-                <a 
-                  href={PERSONAL_INFO.bioSite} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-zinc-500 font-medium hover:text-zinc-300 transition-colors group text-sm"
-                >
-                  Explore my full Bio Site
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
 
-          {/* Portfolio Section */}
-          <section id="portfolio" className="mb-32 scroll-mt-32">
-            <SectionHeading icon={Globe}>Portfolio Highlights</SectionHeading>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {PORTFOLIO.map((project, i) => (
-                <motion.div 
-                  key={i}
-                  whileHover={{ y: -5, scale: 1.01 }}
-                  className="bg-white/[0.02] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-6 hover:border-white/[0.1] transition-all duration-300 h-full flex flex-col group"
+          <div className="grid items-center gap-12 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+            <Reveal y={40} scale={0.96} duration={0.9}>
+              <div className="relative mx-auto max-w-sm">
+                <div className="absolute -inset-3 rounded-[40px] bg-gradient-to-br from-emerald-500/15 to-sky-500/10 blur-2xl" />
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[32px] border border-white/[0.07] bg-zinc-900">
+                  <img
+                    src="/about.webp"
+                    alt="Fabian Milton Fernandes"
+                    width={900}
+                    height={1125}
+                    className="h-full w-full object-cover transition-transform duration-[900ms] hover:scale-[1.04]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/70 via-transparent to-transparent" />
+                </div>
+
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: 12 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.5 }}
+                  transition={{ delay: 0.35, type: 'spring', damping: 18 }}
+                  className="absolute -bottom-5 -right-3 rounded-2xl border border-white/[0.08] bg-[#0d0d0d]/90 px-5 py-3 backdrop-blur-xl"
                 >
-                  <div className="flex justify-between items-start mb-5">
-                    <div className="p-2.5 bg-white/[0.03] rounded-xl">
-                      {project.logo ? (
-                        <img src={project.logo} alt={project.title} className="w-6 h-6 object-contain opacity-70" referrerPolicy="no-referrer" />
-                      ) : (
-                        i === 0 ? <Cpu className="w-6 h-6 text-emerald-400/60" /> : i === 1 ? <Terminal className="w-6 h-6 text-emerald-400/60" /> : <Database className="w-6 h-6 text-emerald-400/60" />
-                      )}
-                    </div>
-                    <a href="#" className="text-zinc-600 hover:text-zinc-400 transition-colors">
-                      <ExternalLink className="w-5 h-5" />
-                    </a>
-                  </div>
-                  <h3 className="text-xl font-medium text-zinc-200 mb-3 group-hover:text-white transition-colors">
-                    {project.title}
-                  </h3>
-                  <p className="text-sm text-zinc-500 leading-relaxed flex-grow">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-5">
-                    {project.tags.map((tag, j) => (
-                      <span key={j} className="px-2.5 py-1 bg-white/[0.02] border border-white/[0.05] rounded-full text-[11px] font-medium text-zinc-500">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                  <p className="text-[10px] uppercase tracking-widest text-zinc-500">Based in</p>
+                  <p className="text-sm font-medium text-zinc-100">Philippines</p>
                 </motion.div>
-              ))}
-            </div>
-          </section>
+              </div>
+            </Reveal>
 
-          {/* Videos Section */}
-          <section id="videos" className="mb-32 scroll-mt-32">
-            <SectionHeading icon={Play}>Latest Videos</SectionHeading>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {VIDEOS.map((video, i) => (
+            <div>
+              <Reveal delay={0.1}>
+                <p className="mb-8 text-lg font-light leading-relaxed text-zinc-400">
+                  {PERSONAL_INFO.bio}
+                </p>
+              </Reveal>
+
+              <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2" gap={0.05}>
+                {SKILLS.map((skill) => (
+                  <StaggerItem key={skill.name}>
+                    <div className="group flex items-center gap-3 rounded-xl border border-white/[0.05] bg-white/[0.02] p-3 transition-colors hover:border-emerald-400/25">
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400/60 transition-shadow group-hover:shadow-[0_0_10px_2px_rgba(52,211,153,0.45)]" />
+                      <span className="text-sm font-medium text-zinc-400 transition-colors group-hover:text-zinc-200">
+                        {skill.name}
+                      </span>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </Stagger>
+
+              <Reveal delay={0.15} className="mt-10">
                 <a
-                  key={i}
-                  href={video.url}
+                  href={PERSONAL_INFO.bioSite}
                   target="_blank"
                   rel="noopener noreferrer"
-                  whileHover={{ y: -5, scale: 1.01 }}
-                  className="group block bg-white/[0.02] border border-white/[0.06] rounded-2xl overflow-hidden hover:border-white/[0.1] transition-all duration-300"
+                  className="group inline-flex items-center gap-2 text-sm font-medium text-zinc-400 transition-colors hover:text-zinc-100"
                 >
-                  <div className="relative aspect-video bg-zinc-900/50 overflow-hidden">
-                    <img 
-                      src={video.thumbnail}
-                      alt={video.title}
-                      className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-14 h-14 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Play className="w-6 h-6 text-white ml-1" fill="white" />
+                  Explore my full Bio Site
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </a>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
+        {/* ============ PROJECTS ============ */}
+        <section id="projects" className="mb-32 scroll-mt-32">
+          <SectionHeading icon={Github}>Selected Work</SectionHeading>
+
+          <Stagger className="grid gap-5 md:grid-cols-2 lg:grid-cols-3" gap={0.07}>
+            {GITHUB_REPOS.map((repo) => (
+              <StaggerItem key={repo.name} className="h-full">
+                <Card className="h-full rounded-2xl" tilt={6} lift={-5}>
+                  <a
+                    href={repo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 transition-colors duration-300 hover:border-white/[0.14]"
+                  >
+                    <div className="mb-4 flex items-start justify-between">
+                      <div className="grid h-9 w-9 place-items-center rounded-lg border border-white/[0.05] bg-zinc-900/60 transition-colors group-hover:border-emerald-400/20">
+                        <Github className="h-4 w-4 text-zinc-500 transition-colors group-hover:text-zinc-300" />
                       </div>
+
+                      {repo.liveUrl ? (
+                        <span className="flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-emerald-300">
+                          <Radio className="h-2.5 w-2.5" />
+                          Live
+                        </span>
+                      ) : (
+                        <ExternalLink className="h-4 w-4 text-zinc-700 transition-colors group-hover:text-zinc-400" />
+                      )}
+                    </div>
+
+                    <h3 className="mb-2 font-mono text-base font-medium text-zinc-100 transition-colors group-hover:text-white">
+                      {repo.name}
+                    </h3>
+
+                    <p className="mb-5 flex-grow text-xs leading-relaxed text-zinc-500">
+                      {repo.description}
+                    </p>
+
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-2 text-xs text-zinc-500">
+                        <span
+                          className={`h-2 w-2 rounded-full ${
+                            LANGUAGE_COLOR[repo.language] ?? 'bg-zinc-500/60'
+                          }`}
+                        />
+                        {repo.language}
+                      </span>
+                      {repo.liveUrl ? (
+                        <span
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.open(repo.liveUrl, '_blank', 'noopener,noreferrer');
+                          }}
+                          className="flex items-center gap-1 text-[11px] font-medium text-emerald-400/80 transition-colors hover:text-emerald-300"
+                        >
+                          Visit
+                          <ArrowRight className="h-3 w-3" />
+                        </span>
+                      ) : null}
+                    </div>
+                  </a>
+                </Card>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </section>
+
+        {/* ============ PORTFOLIO ============ */}
+        <section id="portfolio" className="mb-32 scroll-mt-32">
+          <SectionHeading icon={Globe}>What I Build</SectionHeading>
+
+          <Stagger className="grid gap-6 md:grid-cols-2 lg:grid-cols-3" gap={0.08}>
+            {PORTFOLIO.map((project, i) => (
+              <StaggerItem key={project.title} className="h-full">
+                <Card className="h-full rounded-2xl" tilt={5} glow="rgba(56,189,248,0.12)">
+                  <div className="flex h-full flex-col rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 transition-colors duration-300 hover:border-white/[0.14]">
+                    <div className="mb-5 grid h-11 w-11 place-items-center rounded-xl border border-white/[0.05] bg-zinc-900/60">
+                      {project.logo ? (
+                        <img
+                          src={project.logo}
+                          alt=""
+                          className="h-5 w-5 object-contain opacity-70"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : i === 0 ? (
+                        <Zap className="h-5 w-5 text-emerald-400/70" />
+                      ) : i === 1 ? (
+                        <Radio className="h-5 w-5 text-emerald-400/70" />
+                      ) : (
+                        <Database className="h-5 w-5 text-emerald-400/70" />
+                      )}
+                    </div>
+
+                    <h3 className="mb-3 text-lg font-medium text-zinc-100 transition-colors group-hover:text-white">
+                      {project.title}
+                    </h3>
+
+                    <p className="mb-5 flex-grow text-sm leading-relaxed text-zinc-500">
+                      {project.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2">
+                      {project.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1 text-[11px] font-medium text-zinc-500"
+                        >
+                          {tag}
+                        </span>
+                      ))}
                     </div>
                   </div>
-                  <div className="p-5">
-                    <h3 className="text-base font-medium text-zinc-300 mb-2 group-hover:text-white transition-colors">
-                      {video.title}
-                    </h3>
-                    <span className="text-xs text-zinc-600 flex items-center gap-1.5 uppercase tracking-wider">
-                      {video.platform === 'facebook' && '▶ Facebook'}
-                    </span>
-                  </div>
-                </a>
-              ))}
-            </div>
-          </section>
-
-        {/* GitHub Repos Section */}
-        <section id="github" className="mb-32 scroll-mt-32">
-          <SectionHeading icon={Github}>Open Source Projects</SectionHeading>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {GITHUB_REPOS.map((repo, i) => (
-              <motion.a
-                key={i}
-                href={repo.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ y: -3, scale: 1.01 }}
-                className="group p-5 bg-white/[0.02] border border-white/[0.06] rounded-2xl hover:border-white/[0.1] transition-all duration-300"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="p-2 bg-zinc-900/50 rounded-lg">
-                    <Github className="w-4 h-4 text-zinc-600 group-hover:text-zinc-400 transition-colors" />
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-zinc-600">
-                    <span className="flex items-center gap-1">
-                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500/60" />
-                      {repo.stars}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="w-2.5 h-2.5 rounded-full bg-blue-500/60" />
-                      {repo.forks}
-                    </span>
-                  </div>
-                </div>
-                <h3 className="text-base font-medium text-zinc-300 mb-2 group-hover:text-white transition-colors">
-                  {repo.name}
-                </h3>
-                <p className="text-xs text-zinc-500 line-clamp-2 mb-3">
-                  {repo.description}
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-zinc-600 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500/60" />
-                    {repo.language}
-                  </span>
-                  <ExternalLink className="w-3.5 h-3.5 text-zinc-700 group-hover:text-zinc-500 transition-colors" />
-                </div>
-              </motion.a>
+                </Card>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </section>
 
-        {/* Experience Section */}
+        {/* ============ VIDEOS ============ */}
+        <section id="videos" className="mb-32 scroll-mt-32">
+          <SectionHeading icon={Play}>Latest Videos</SectionHeading>
+
+          <Stagger className="grid gap-6 md:grid-cols-2 lg:grid-cols-4" gap={0.07}>
+            {VIDEOS.map((video) => (
+              <StaggerItem key={video.title}>
+                <Card className="rounded-2xl" tilt={7} glow="rgba(245,158,11,0.10)">
+                  <a
+                    href={video.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] transition-colors duration-300 hover:border-white/[0.14]"
+                  >
+                    <div className="relative aspect-video overflow-hidden bg-zinc-900/50">
+                      <img
+                        src={video.thumbnail}
+                        alt={video.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover opacity-60 transition-opacity duration-500 group-hover:opacity-80"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="grid h-12 w-12 place-items-center rounded-full bg-white/10 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+                          <Play className="ml-0.5 h-5 w-5 text-white" fill="white" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="mb-1.5 text-sm font-medium text-zinc-300 transition-colors group-hover:text-white">
+                        {video.title}
+                      </h3>
+                      <span className="text-[10px] uppercase tracking-wider text-zinc-600">
+                        Facebook
+                      </span>
+                    </div>
+                  </a>
+                </Card>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </section>
+
+        {/* ============ EXPERIENCE ============ */}
         <section id="experience" className="mb-32 scroll-mt-32">
           <SectionHeading icon={Briefcase}>Work Experience</SectionHeading>
-          <div className="space-y-6">
-            {EXPERIENCE.map((exp, i) => (
-              <div key={i} className="relative pl-6 border-l border-white/[0.08]">
-                <div className="absolute left-[-3px] top-2 w-[6px] h-[6px] rounded-full bg-emerald-500/40" />
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
-                  <h3 className="text-lg font-medium text-zinc-300">{exp.role}</h3>
-                  <span className="text-sm font-mono text-zinc-600">{exp.period}</span>
-                </div>
-                <div className="text-zinc-600 font-medium mb-3 uppercase tracking-wider text-xs">{exp.company}</div>
-                <p className="text-sm text-zinc-500 max-w-3xl leading-relaxed font-light">
-                  {exp.description}
-                </p>
-              </div>
-            ))}
+
+          <div className="grid gap-8 md:grid-cols-[2px_minmax(0,1fr)]">
+            <DrawLine className="hidden md:block" />
+
+            <Stagger className="space-y-10" gap={0.12}>
+              {EXPERIENCE.map((exp) => (
+                <StaggerItem key={exp.role} className="relative md:pl-4">
+                  <span className="absolute -left-[1px] top-2 hidden h-[7px] w-[7px] rounded-full bg-emerald-400 md:block" />
+                  <div className="mb-2 flex flex-col justify-between md:flex-row md:items-center">
+                    <h3 className="text-lg font-medium text-zinc-200">{exp.role}</h3>
+                    <span className="font-mono text-xs text-zinc-500">{exp.period}</span>
+                  </div>
+                  <div className="mb-3 text-xs font-medium uppercase tracking-wider text-emerald-400/70">
+                    {exp.company}
+                  </div>
+                  <p className="max-w-3xl text-sm font-light leading-relaxed text-zinc-400">
+                    {exp.description}
+                  </p>
+                </StaggerItem>
+              ))}
+            </Stagger>
           </div>
         </section>
 
-        {/* Blog Section */}
+        {/* ============ BLOG ============ */}
         <section id="blog" className="mb-32 scroll-mt-32">
           <SectionHeading icon={BookOpen}>Latest Insights</SectionHeading>
-          <div className="grid md:grid-cols-3 gap-6">
-            {BLOG_POSTS.map((post, i) => (
-              <motion.div 
-                key={i}
-                whileHover={{ y: -5 }}
-                className="flex flex-col h-full bg-white/[0.02] border border-white/[0.06] rounded-2xl overflow-hidden group cursor-pointer"
-              >
-                <div className="aspect-[3/2] bg-zinc-900/50 overflow-hidden">
-                  <img 
-                    src={`https://picsum.photos/seed/blog${i}/600/400`} 
-                    alt={post.title}
-                    className="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-500"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <div className="p-5 flex flex-col flex-grow">
-                  <div className="text-xs font-mono text-zinc-600 mb-3">{post.date}</div>
-                  <h3 className="text-base font-medium text-zinc-300 mb-3 group-hover:text-white transition-colors">
-                    {post.title}
-                  </h3>
-                  <p className="text-xs text-zinc-500 mb-5 line-clamp-2 font-light">
-                    {post.excerpt}
-                  </p>
-                  <div className="mt-auto flex items-center gap-2 text-zinc-500 text-sm group-hover:gap-2.5 transition-all">
-                    Read More <ChevronRight className="w-3.5 h-3.5" />
+
+          <Stagger className="grid gap-6 md:grid-cols-3" gap={0.08}>
+            {BLOG_POSTS.map((post) => (
+              <StaggerItem key={post.title} className="h-full">
+                <Card className="h-full rounded-2xl" tilt={5} glow="rgba(168,85,247,0.10)">
+                  <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] transition-colors duration-300 hover:border-white/[0.14]">
+                    <div className="aspect-[3/2] overflow-hidden bg-zinc-900/50">
+                      <div className="grid h-full w-full place-items-center text-zinc-700">
+                        <BookOpen className="h-8 w-8" />
+                      </div>
+                    </div>
+                    <div className="flex flex-grow flex-col p-5">
+                      <div className="mb-3 font-mono text-[11px] text-zinc-600">{post.date}</div>
+                      <h3 className="mb-2 text-base font-medium text-zinc-200 transition-colors group-hover:text-white">
+                        {post.title}
+                      </h3>
+                      <p className="mb-4 flex-grow text-xs font-light leading-relaxed text-zinc-500">
+                        {post.excerpt}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
+                </Card>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </section>
 
-        {/* Contact Section */}
+        {/* ============ CONTACT ============ */}
         <section id="contact" className="scroll-mt-32">
-          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-white/[0.03] to-white/[0.01] border border-white/[0.06] p-10 md:p-14 text-center">
-            <div className="absolute inset-0 bg-[#0a0a0a]/60 backdrop-blur-sm -z-10" />
-            <h2 className="text-3xl md:text-4xl font-medium text-white mb-5">Let's build something great</h2>
-            <p className="text-zinc-500 max-w-lg mx-auto mb-8 text-sm font-light">
-              Interested in discussing a project or opportunity? Feel free to reach out!
-            </p>
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-              <motion.button 
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={handleHireClick}
-                className="px-7 py-3.5 bg-white/[0.08] text-zinc-200 font-medium rounded-xl hover:bg-white/[0.12] transition-all flex items-center gap-2 border border-white/[0.06]"
-              >
-                <Mail className="w-4 h-4" />
-                Get in Touch
-              </motion.button>
+          <Reveal y={40} scale={0.97} duration={0.9}>
+            <div className="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-gradient-to-br from-white/[0.04] to-white/[0.01] px-8 py-16 text-center md:px-14">
+              <div className="absolute -top-24 left-1/2 h-48 w-[36rem] -translate-x-1/2 rounded-full bg-emerald-500/10 blur-[100px]" />
+              <div className="relative">
+                <SplitText
+                  text="Let's build something great"
+                  className="mb-5 block text-3xl font-medium text-white md:text-5xl"
+                />
+                <Reveal delay={0.3} className="mx-auto mb-10 max-w-lg">
+                  <p className="text-sm font-light text-zinc-400">
+                    Remote IT support, AI automation, or a full build from scratch.
+                    Tell me what you are working on.
+                  </p>
+                </Reveal>
+
+                <Magnetic strength={0.25}>
+                  <button
+                    onClick={() => setIsHireModalOpen(true)}
+                    className="mx-auto flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.08] px-7 py-3.5 font-medium text-zinc-100 transition-colors hover:bg-white/[0.14]"
+                  >
+                    <Mail className="h-4 w-4" />
+                    Get in Touch
+                  </button>
+                </Magnetic>
+              </div>
             </div>
-          </div>
+          </Reveal>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-        <div className="text-zinc-500 text-sm">
-          © {new Date().getFullYear()} {PERSONAL_INFO.name}. All rights reserved.
-        </div>
-        <div className="flex items-center gap-6">
-          <a href={PERSONAL_INFO.bioSite} target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-white transition-colors text-sm">Bio Site</a>
-          <a href="#" className="text-zinc-500 hover:text-white transition-colors text-sm">Privacy Policy</a>
-          <a href="#" className="text-zinc-500 hover:text-white transition-colors text-sm">Terms of Service</a>
+      <footer className="relative z-10 border-t border-white/[0.05]">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-12 md:flex-row">
+          <p className="text-sm text-zinc-500">
+            © {new Date().getFullYear()} {PERSONAL_INFO.name}
+          </p>
+          <div className="flex items-center gap-6">
+            <a
+              href={PERSONAL_INFO.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-zinc-500 transition-colors hover:text-white"
+            >
+              GitHub
+            </a>
+            <a
+              href={PERSONAL_INFO.bioSite}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-zinc-500 transition-colors hover:text-white"
+            >
+              Bio Site
+            </a>
+            <a
+              href={`mailto:${PERSONAL_INFO.email}`}
+              className="text-sm text-zinc-500 transition-colors hover:text-white"
+            >
+              Email
+            </a>
+          </div>
         </div>
       </footer>
     </div>
   );
 }
-

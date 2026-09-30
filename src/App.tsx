@@ -456,7 +456,7 @@ export default function App() {
                 <div className="group absolute inset-0 overflow-hidden rounded-[48px] border border-hairline bg-bg-solid/60 shadow-2xl backdrop-blur-xl">
                   <img
                     src="/profile.webp"
-                    alt={PERSONAL_INFO.name}
+                    alt="Fabian Milton Fernandes, AI engineer and IT infrastructure consultant based in the Philippines"
                     width={900}
                     height={900}
                     className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
@@ -560,7 +560,7 @@ export default function App() {
                 <div className="relative aspect-[4/5] overflow-hidden rounded-[32px] border border-hairline bg-bg-solid">
                   <img
                     src="/about.webp"
-                    alt="Fabian Milton Fernandes"
+                    alt="Portrait of Fabian Milton Fernandes, AI engineer and IT infrastructure consultant"
                     width={900}
                     height={1125}
                     className="h-full w-full object-cover transition-transform duration-[900ms] hover:scale-[1.04]"

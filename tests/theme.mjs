@@ -234,6 +234,68 @@ for (const m of constants.matchAll(/(?:cover|thumbnail):\s*"(\/[^"]+\.webp)"/g))
   check(`referenced asset ${m[1]} exists in dist`, ok, ok ? '' : 'broken reference');
 }
 
+/* ---------- 8b. Crawlability: the actual SEO surface ---------- */
+
+const robotsPath = path.join(dist, 'robots.txt');
+const sitemapPath = path.join(dist, 'sitemap.xml');
+
+check('robots.txt exists as a real file', fs.existsSync(robotsPath));
+check('sitemap.xml exists as a real file', fs.existsSync(sitemapPath));
+
+if (fs.existsSync(robotsPath)) {
+  const robots = fs.readFileSync(robotsPath, 'utf8');
+  check('robots.txt is text, not the SPA fallback', !robots.includes('<!doctype html>'));
+  check('robots.txt allows the profile image', /Allow:\s*\/profile\.webp/.test(robots));
+  check('robots.txt points at the sitemap', /Sitemap:\s*https:\/\/sysitadmin\.com\/sitemap\.xml/.test(robots));
+  check('robots.txt does not block images', !/Disallow:\s*\/(profile|about|apps|insights)/.test(robots));
+}
+
+if (fs.existsSync(sitemapPath)) {
+  const sm = fs.readFileSync(sitemapPath, 'utf8');
+  check('sitemap is valid XML, not HTML', !sm.includes('<!doctype html>'));
+  check('sitemap declares the image namespace', /xmlns:image=/.test(sm));
+  check('sitemap lists profile.webp as an image', /<image:loc>[^<]*profile\.webp/.test(sm));
+  check('sitemap lists about.webp as an image', /<image:loc>[^<]*about\.webp/.test(sm));
+  check('sitemap has image captions', (sm.match(/<image:caption>/g) ?? []).length >= 2);
+  check('sitemap has lastmod', /<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/.test(sm));
+  // Every image referenced must actually exist in dist.
+  for (const m of sm.matchAll(/<image:loc>https:\/\/sysitadmin\.com(\/[^<]+)</g)) {
+    check(`sitemap image ${m[1]} exists in dist`, fs.existsSync(path.join(dist, m[1].replace(/^\//, ''))));
+  }
+}
+
+// JSON-LD Person schema is what attaches a photo to a name in search results.
+const ldBlocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+check('JSON-LD present in built HTML', ldBlocks.length >= 1, `${ldBlocks.length} block(s)`);
+
+let person = null;
+for (const b of ldBlocks) {
+  try {
+    const parsed = JSON.parse(b);
+    if (parsed['@type'] === 'Person') person = parsed;
+  } catch (e) {
+    check('JSON-LD block parses as valid JSON', false, e.message);
+  }
+}
+check('JSON-LD includes a Person', !!person);
+if (person) {
+  check('Person has a name', person.name === 'Fabian Milton Fernandes');
+  check('Person lists images', Array.isArray(person.image) && person.image.length >= 1);
+  check('Person image URLs are absolute', (person.image ?? []).every((i) => i.startsWith('https://')));
+  check('Person has a jobTitle', !!person.jobTitle);
+  check('Person has sameAs profile links', (person.sameAs ?? []).length >= 2, `${(person.sameAs ?? []).length} links`);
+  check('Person sameAs includes GitHub', (person.sameAs ?? []).some((u) => u.includes('github.com')));
+  check('Person sameAs includes LinkedIn', (person.sameAs ?? []).some((u) => u.includes('linkedin.com')));
+  for (const img of person.image ?? []) {
+    const rel = new URL(img).pathname.replace(/^\//, '');
+    check(`Person image ${rel} exists in dist`, fs.existsSync(path.join(dist, rel)));
+  }
+}
+
+// Photos need real alt text to be meaningfully indexed, not alt="".
+check('profile photo has descriptive alt', /alt="Fabian Milton[^"]*"/.test(app) && !/alt=\{PERSONAL_INFO\.name\}/.test(app));
+check('about photo has descriptive alt', /alt="Portrait of Fabian/.test(app));
+
 /* ---------- 9. Reduced motion still intact ---------- */
 
 check('prefers-reduced-motion block kept', /prefers-reduced-motion/.test(css));

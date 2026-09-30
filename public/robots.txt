@@ -1,0 +1,25 @@
+# robots.txt
+#
+# This file must be served as text/plain. Because the site is an
+# assets-only Worker with SPA fallback, any path that is not an actual
+# uploaded asset returns index.html with a 200 — including /robots.txt and
+# /sitemap.xml before they existed as real files. That is why both are
+# committed to public/ rather than handled by a Worker route.
+
+User-agent: *
+Allow: /
+
+# Crawl the images: the photo and portrait are the point of this site being
+# findable in image search, so they must not be disallowed.
+Allow: /profile.webp
+Allow: /about.webp
+Allow: /og-image.jpg
+Allow: /apps/
+Allow: /insights/
+Allow: /videos/
+
+# Nothing here is private, but there is no value in a crawler walking the
+# 404 fallback and burning crawl budget.
+Disallow: /*?
+
+Sitemap: https://sysitadmin.com/sitemap.xml

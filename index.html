@@ -48,6 +48,62 @@
     />
     <link rel="preload" as="image" href="/profile.webp" fetchpriority="high" />
 
+    <!--
+      Person structured data.
+
+      This is what lets Google associate a photo, job title and set of
+      profiles with your name rather than just with a page. It is the
+      single highest-value thing on this page for appearing in search with
+      a picture attached.
+
+      sameAs matters as much as the photo: it is how Google confirms the
+      profiles belong to the same person.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Fabian Milton Fernandes",
+        "url": "https://sysitadmin.com/",
+        "image": [
+          "https://sysitadmin.com/profile.webp",
+          "https://sysitadmin.com/about.webp"
+        ],
+        "jobTitle": "AI Engineer & IT Infrastructure Consultant",
+        "description": "AI engineer and IT infrastructure consultant specialising in self-hosted AI systems, automation, and production infrastructure. Over a decade of hands-on experience.",
+        "email": "admin@sysitadmin.com",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "PH"
+        },
+        "knowsAbout": [
+          "Self-hosted AI",
+          "Artificial Intelligence",
+          "IT Infrastructure",
+          "Docker",
+          "Kubernetes",
+          "Proxmox VE",
+          "Automation",
+          "Retrieval-Augmented Generation"
+        ],
+        "sameAs": [
+          "https://github.com/Ferns1992",
+          "https://www.linkedin.com/in/fabianfernandes1992",
+          "https://bio.site/fabianmiltonfernandes"
+        ]
+      }
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "url": "https://sysitadmin.com/",
+        "name": "Fabian Milton Fernandes",
+        "inLanguage": "en"
+      }
+    </script>
+
     <script>
       // Resolve the theme before first paint.
       //

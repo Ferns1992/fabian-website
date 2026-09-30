@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sitemap with image entries.
+
+  Google finds images either by following <img> tags on a crawled page or by
+  reading <image:image> from a sitemap. Doing both is what makes the photos
+  eligible for image search independently of whether the page itself ranks.
+
+  lastmod is the build date; keep it current when deploying real changes.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://sysitadmin.com/</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://sysitadmin.com/profile.webp</image:loc>
+      <image:title>Fabian Milton Fernandes — AI Engineer &amp; IT Infrastructure Consultant</image:title>
+      <image:caption>Portrait of Fabian Milton Fernandes, AI engineer and IT infrastructure consultant</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://sysitadmin.com/about.webp</image:loc>
+      <image:title>Fabian Milton Fernandes — About</image:title>
+      <image:caption>Fabian Milton Fernandes, based in the Philippines and working across India and Bahrain</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://sysitadmin.com/og-image.jpg</image:loc>
+      <image:title>Fabian Milton Fernandes — AI Engineer &amp; IT Infrastructure Consultant</image:title>
+      <image:caption>Portfolio card for Fabian Milton Fernandes</image:caption>
+    </image:image>
+  </url>
+</urlset>
